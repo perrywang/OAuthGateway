@@ -1,0 +1,19 @@
+buildscript {
+    ext {
+        scribejavaVersion = '3.0.0'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.github.scribejava:scribejava-core:${scribejavaVersion}")
+    }
+}
+jar {
+    baseName = 'oauth-gateway-core'
+    version = '0.0.1-SNAPSHOT'
+}
+
+dependencies {
+    compile('com.github.scribejava:scribejava-core:3.0.0')
+}
