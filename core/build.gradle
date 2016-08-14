@@ -16,4 +16,5 @@ jar {
 
 dependencies {
     compile('com.github.scribejava:scribejava-core:3.0.0')
+    testCompile('junit:junit:4.12');
 }
