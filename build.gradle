@@ -9,3 +9,5 @@ subprojects {
 		mavenCentral()
 	}
 }
+
+apply plugin: 'eclipse'
