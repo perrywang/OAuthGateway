@@ -13,3 +13,5 @@ subprojects {
 		compile('org.projectlombok:lombok:1.16.10')
 	}
 }
+
+apply plugin: 'eclipse'
