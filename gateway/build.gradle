@@ -18,7 +18,6 @@ jar {
 }
 dependencies {
     compile project(':core')
-    compile('org.projectlombok:lombok')
     compile('org.springframework.boot:spring-boot-starter')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
