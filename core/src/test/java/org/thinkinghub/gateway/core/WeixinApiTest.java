@@ -2,6 +2,7 @@ package org.thinkinghub.gateway.core;
 
 
 import org.junit.Test;
+import org.thinkinghub.gateway.api.WeixinApi;
 
 import static org.junit.Assert.assertEquals;
 
