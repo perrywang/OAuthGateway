@@ -71,7 +71,7 @@ public class GatewayController {
 		if(state != null){
 			custCallbackUrl = map.get(state);
 		}
-		WeiboAccessToken token = new WeiboRequest().getResult(code);
+		WeiboAccessToken token = new WeiboRequest(custCallbackUrl,state).getResult(code);
 		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUid();
 		HttpHeaders responseHeader = new HttpHeaders();
 		responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
