@@ -11,6 +11,6 @@ public class WeixinApiTest {
 
     @Test
     public void getAuthorizationBaseUrl() {
-        assertEquals(new WeixinApi().getAuthorizationBaseUrl(), AUTHORIZE_URL);
+        assertEquals(WeixinApi.instance().getAuthorizationBaseUrl(), AUTHORIZE_URL);
     }
 }
