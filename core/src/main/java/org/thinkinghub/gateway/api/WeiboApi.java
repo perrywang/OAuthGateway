@@ -11,7 +11,7 @@ public class WeiboApi extends DefaultApi20{
 		static final WeiboApi INSTANCE = new WeiboApi();
 	}
 	
-	public static WeiboApi getInstance(){
+	public static WeiboApi instance(){
 		return InstanceHolder.INSTANCE;
 	}
 	

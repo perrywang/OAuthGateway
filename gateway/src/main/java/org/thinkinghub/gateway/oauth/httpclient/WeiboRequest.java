@@ -35,7 +35,7 @@ public class WeiboRequest {
 		final String myApiSecret = "69ea74871d5955b4d2f68e430b01810c";
 		String myCallback = "http://2e0e1193.ngrok.io/oauth/sina";
 		OAuth20Service service = new ServiceBuilder().apiKey(myApiKey).apiSecret(myApiSecret).callback(myCallback).state(getState())
-				.build(WeiboApi.getInstance());
+				.build(WeiboApi.instance());
 		return service;
 	}
 
