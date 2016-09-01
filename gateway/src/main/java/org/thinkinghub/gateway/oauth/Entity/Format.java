@@ -12,6 +12,14 @@ import javax.persistence.UniqueConstraint;
 @Data
 @NoArgsConstructor
 public class Format extends GatewayPersistable{
+public Format(Long id) {
+		super(id);
+	}
+
+	private static final long serialVersionUID = -7219875406300148886L;
+	//	public Format(){
+//		super();
+//	}
     private String code;
     private String name; //like json, xml, etc.
 }

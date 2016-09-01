@@ -15,7 +15,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class User extends GatewayPersistable{
-    private String code; //note: this is the code for gateway system, must be unique.
+    public User(Long id) {
+		super(id);
+	}
+
+	private static final long serialVersionUID = 7170397482816364599L;
+	private String code; //note: this is the code for gateway system, must be unique.
     private String name;
     private String phone;
     private String address;

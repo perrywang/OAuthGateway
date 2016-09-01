@@ -21,6 +21,10 @@ public abstract class GatewayPersistable implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+    
+    public Long getId(){
+    	return this.id;
+    }
 
     @Transient
     public boolean isNew() {
