@@ -33,8 +33,10 @@ public class GatewayController {
 	private Map<String,String> map = new ConcurrentHashMap<String, String>();
 	
 	@RequestMapping("/qq_login")
-	public void qqLogin(String custCallback, HttpServletResponse response){
-		QQRequest request = new QQRequest(custCallback);
+	public void qqLogin(@RequestParam("callbackUrl")String custCallbackUrl, HttpServletResponse response){
+		String state = Long.toString(System.currentTimeMillis());
+		map.put(state, custCallbackUrl);
+		QQRequest request = new QQRequest(custCallbackUrl, state);
 		try{
 		String returnURL =  request.getAuthorizationUrl();
 		response.sendRedirect(returnURL);
@@ -44,8 +46,19 @@ public class GatewayController {
 	}
 	
 	@RequestMapping("/oauth/qq")
-	public void requestQQAccessToken(String code){
-		new QQRequest().getAccessToken(code);
+	public ResponseEntity<String> requestQQAccessToken(
+			HttpServletRequest request, 
+			@RequestParam("code")String code,
+			@RequestParam("state")String state){
+		String custCallbackUrl = "thinkinghub.org";
+		if(state != null){
+			custCallbackUrl = map.get(state);
+		}
+		String token = new QQRequest(custCallbackUrl,state).getResult(code);
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token;
+		HttpHeaders responseHeader = new HttpHeaders();
+		responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
+		return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
 	}
 	
 	@RequestMapping("/weibo_login")
@@ -64,7 +77,6 @@ public class GatewayController {
 	@RequestMapping("/oauth/sina")
 	public ResponseEntity<String> requestWeiboAccessToken(
 			HttpServletRequest request, 
-			HttpServletResponse response,
 			@RequestParam("code")String code,
 			@RequestParam("state")String state){
 		String custCallbackUrl = "thinkinghub.org";
