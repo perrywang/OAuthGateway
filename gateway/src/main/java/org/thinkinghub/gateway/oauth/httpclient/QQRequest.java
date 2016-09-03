@@ -67,8 +67,6 @@ public class QQRequest {
 			
 		}
 		String accessTokenStr = accessToken.getRawResponse();
-		Gson gson = new Gson();
-		WeiboAccessToken token = gson.fromJson(accessTokenStr, WeiboAccessToken.class);
-		return "";
+		return accessTokenStr;
 	}
 }

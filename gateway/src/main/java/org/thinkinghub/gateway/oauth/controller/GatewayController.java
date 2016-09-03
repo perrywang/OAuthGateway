@@ -54,8 +54,8 @@ public class GatewayController {
 		if(state != null){
 			custCallbackUrl = map.get(state);
 		}
-		String token = new QQRequest(custCallbackUrl,state).getResult(code);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token;
+		String tokenStr = new QQRequest(custCallbackUrl,state).getResult(code);
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?" + tokenStr;
 		HttpHeaders responseHeader = new HttpHeaders();
 		responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
 		return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
