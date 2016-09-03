@@ -24,8 +24,6 @@ import org.thinkinghub.gateway.oauth.httpclient.WeiboRequest;
 public class GatewayController {
     @RequestMapping(value = "/controllers/gateway", method = RequestMethod.GET)
     ResponseEntity<String> route(){
-
-
         return new ResponseEntity("{}", HttpStatus.OK);
     }
     

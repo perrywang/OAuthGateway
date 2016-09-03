@@ -28,6 +28,7 @@ public class QQApi extends DefaultApi20{
 		return "https://graph.qq.com/oauth2.0/token";
 	}
 	
+	
 	@Override
 	public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
 		return QQOAuth2AccessTokenJsonExtractor.instance();

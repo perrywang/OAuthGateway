@@ -1,9 +1,5 @@
 package org.thinkinghub.gateway.core.extractors;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.utils.Preconditions;
