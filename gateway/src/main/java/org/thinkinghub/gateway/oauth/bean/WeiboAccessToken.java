@@ -1,11 +1,16 @@
 package org.thinkinghub.gateway.oauth.bean;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@Data
 public class WeiboAccessToken{
 	
-	private final String access_token;
-	private final int remind_in;
-	private final int expires_in;
-	private final String uid;
+	private String access_token;
+	private int remind_in;
+	private int expires_in;
+	private String uid;
 	
 	public WeiboAccessToken(String access_token, int remind_in, int expires_in, String uid) {
 		super();
@@ -13,17 +18,5 @@ public class WeiboAccessToken{
 		this.remind_in = remind_in;
 		this.expires_in = expires_in;
 		this.uid = uid;
-	}
-	public String getAccess_token() {
-		return access_token;
-	}
-	public int getRemind_in() {
-		return remind_in;
-	}
-	public int getExpires_in() {
-		return expires_in;
-	}
-	public String getUid() {
-		return uid;
 	}
 }

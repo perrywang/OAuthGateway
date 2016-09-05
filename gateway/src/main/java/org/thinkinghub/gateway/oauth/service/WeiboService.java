@@ -1,53 +1,45 @@
-package org.thinkinghub.gateway.oauth.httpclient;
+package org.thinkinghub.gateway.oauth.service;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeiboApi;
 import org.thinkinghub.gateway.oauth.bean.WeiboAccessToken;
+import org.thinkinghub.gateway.oauth.bean.WeiboProperties;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.Gson;
 
-public class WeiboRequest {
-	private String custCallback = "";
-	private String state="";
-
-	public WeiboRequest() {
-	}
-
-	public WeiboRequest(String custCallback, String state) {
-		this.custCallback = custCallback;
-		this.state = state;
-	}
-
-	public String getCustCallback() {
-		return this.custCallback;
-	}
+@Service
+public class WeiboService {
+	@Autowired
+	WeiboProperties weiboConfig;
 	
-	public String getState(){
-		return this.state;
+	public WeiboService() {
 	}
 
-	public OAuth20Service getOAuthService() {
-		final String myApiKey = "1223382392";
-		final String myApiSecret = "69ea74871d5955b4d2f68e430b01810c";
-		String myCallback = "http://2e0e1193.ngrok.io/oauth/sina";
-		OAuth20Service service = new ServiceBuilder().apiKey(myApiKey).apiSecret(myApiSecret).callback(myCallback).state(getState())
+	private OAuth20Service getOAuthService(String state) {
+		OAuth20Service service = new ServiceBuilder()
+				.apiKey(weiboConfig.getApiKey())
+				.apiSecret(weiboConfig.getApiSecret())
+				.callback(weiboConfig.getCallback())
+				.state(state)
 				.build(WeiboApi.instance());
 		return service;
 	}
 
-	public String getAuthorizationUrl() {
-		final String authorizationUrl = getOAuthService().getAuthorizationUrl();
+	public String getAuthorizationUrl(String state) {
+		final String authorizationUrl = getOAuthService(state).getAuthorizationUrl();
 		return authorizationUrl;
 	}
 
-	public WeiboAccessToken getResult(String code) {
+	public WeiboAccessToken getResult(String state, String code) {
 		OAuth2AccessToken accessToken = null;
 		try {
-			accessToken = getOAuthService().getAccessToken(code);
+			accessToken = getOAuthService(state).getAccessToken(code);
 		} catch (IOException e) {
 
 		} finally {
