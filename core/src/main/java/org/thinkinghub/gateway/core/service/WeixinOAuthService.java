@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.core;
+package org.thinkinghub.gateway.core.service;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.model.AbstractRequest;
