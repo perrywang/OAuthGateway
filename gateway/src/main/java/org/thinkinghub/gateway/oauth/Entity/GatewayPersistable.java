@@ -1,25 +1,23 @@
 package org.thinkinghub.gateway.oauth.Entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-import java.io.Serializable;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class GatewayPersistable implements Serializable {
+public abstract class GatewayPersistable {
 
-    private static final long serialVersionUID = -8503475553208415513L;
-
-    @Id
-    @GeneratedValue
+	@Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     
     public Long getId(){

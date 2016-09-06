@@ -21,9 +21,6 @@ public class QQService {
 	@Autowired
 	QQProperties qqConfig;
 	
-	public QQService() {
-	}
-	
 	@PostConstruct
 	public void initilize() {
 		log.info(qqConfig.toString());

@@ -1,0 +1,1 @@
+insert into USERS (id,key,callback) values (1,'testuser', 'abc.com')
