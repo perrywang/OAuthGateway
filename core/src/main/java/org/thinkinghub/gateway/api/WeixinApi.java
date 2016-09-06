@@ -1,10 +1,14 @@
 package org.thinkinghub.gateway.api;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.extractors.TokenExtractor;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.ParameterList;
-import org.thinkinghub.gateway.core.WeixinOAuthService;
+import org.thinkinghub.gateway.core.extractors.QQOAuth2AccessTokenJsonExtractor;
+import org.thinkinghub.gateway.core.extractors.WeixinOAuth2AccessTokenJsonExtractor;
+import org.thinkinghub.gateway.core.service.WeixinOAuthService;
 import org.thinkinghub.gateway.util.Constants;
 
 import java.util.Map;
@@ -22,6 +26,10 @@ public class WeixinApi extends DefaultApi20 {
         return InstanceHolder.INSTANCE;
     }
 
+    @Override
+    public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
+        return WeixinOAuth2AccessTokenJsonExtractor.instance();
+    }
     /**
      * see getAuthorizationUrl to understand what parameters will be appended to the base Url.
      *
