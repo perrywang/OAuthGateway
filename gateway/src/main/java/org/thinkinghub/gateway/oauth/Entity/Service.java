@@ -4,5 +4,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum Service{
-	WECHAT,QQ,WEIBO
+	WEBCHAT,QQ,WEIBO
 }
