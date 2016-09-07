@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.QQApi;
-import org.thinkinghub.gateway.oauth.bean.QQProperties;
+import org.thinkinghub.gateway.oauth.config.QQConfiguration;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QQService {
 	@Autowired
-	QQProperties qqConfig;
+	private QQConfiguration qqConfig;
 	
 	@PostConstruct
 	public void initilize() {

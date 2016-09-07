@@ -1,30 +1,37 @@
-package org.thinkinghub.gateway.oauth.Entity;
-
-import java.io.Serializable;
+package org.thinkinghub.gateway.oauth.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "AuthenticationHistory")
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
-public class AuthenticationHistory extends GatewayPersistable implements Serializable{
+public class AuthenticationHistory extends GatewayPersistable {
 
 	private static final long serialVersionUID = 6893602210224518770L;
 	
 	@ManyToOne
 	private User user;
 	
-    private Service service;
+	@Enumerated(EnumType.STRING)
+    private ServiceType serviceType;
     
     private boolean isSuccess;
+    
     private String errorCode;
+    
     private String errorDesc;
-
-
+    
+    public AuthenticationHistory(Long id) {
+        super(id);
+    }
 }

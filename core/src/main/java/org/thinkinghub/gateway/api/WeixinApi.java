@@ -1,17 +1,17 @@
 package org.thinkinghub.gateway.api;
 
+import java.util.Map;
+
+import org.thinkinghub.gateway.core.extractors.WeixinOAuth2AccessTokenJsonExtractor;
+import org.thinkinghub.gateway.core.service.WeixinOAuthService;
+import org.thinkinghub.gateway.util.Constants;
+
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.ParameterList;
-import org.thinkinghub.gateway.core.extractors.QQOAuth2AccessTokenJsonExtractor;
-import org.thinkinghub.gateway.core.extractors.WeixinOAuth2AccessTokenJsonExtractor;
-import org.thinkinghub.gateway.core.service.WeixinOAuthService;
-import org.thinkinghub.gateway.util.Constants;
-
-import java.util.Map;
 
 public class WeixinApi extends DefaultApi20 {
 

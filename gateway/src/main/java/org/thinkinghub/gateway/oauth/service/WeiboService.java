@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeiboApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
-import org.thinkinghub.gateway.oauth.bean.WeiboProperties;
+import org.thinkinghub.gateway.oauth.config.WeiboConfiguration;
 
 import java.io.IOException;
 
 @Service
 public class WeiboService {
     @Autowired
-    WeiboProperties weiboConfig;
+    private WeiboConfiguration weiboConfig;
 
     public WeiboService() {
     }

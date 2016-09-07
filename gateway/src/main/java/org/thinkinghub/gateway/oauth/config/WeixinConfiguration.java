@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.oauth.bean;
+package org.thinkinghub.gateway.oauth.config;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "weixin")
-public class WeixinProperties {
+public class WeixinConfiguration {
     private String apiKey;
     private String apiSecret;
     private String callback;

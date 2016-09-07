@@ -28,6 +28,7 @@ public class GatewayController {
 	@Autowired
 	WeiboService weiboService;
 	
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @RequestMapping(value = "/controllers/gateway", method = RequestMethod.GET)
     ResponseEntity<String> route(){
         return new ResponseEntity("{}", HttpStatus.OK);

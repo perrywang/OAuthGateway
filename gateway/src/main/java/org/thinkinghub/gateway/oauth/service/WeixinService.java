@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeixinApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
-import org.thinkinghub.gateway.oauth.bean.WeixinProperties;
+import org.thinkinghub.gateway.oauth.config.WeixinConfiguration;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class WeixinService {
     @Autowired
-    WeixinProperties weixinConfig;
+    private WeixinConfiguration weixinConfig;
 
     private OAuth20Service getOAuthService(String state) {
         OAuth20Service service = new ServiceBuilder()

@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.oauth.bean;
+package org.thinkinghub.gateway.oauth.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "qq")
-public class QQProperties {
+public class QQConfiguration {
 	private String apiKey;
 	private String apiSecret;
 	private String callback;

@@ -1,10 +1,8 @@
 package org.thinkinghub.gateway.oauth.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 
-import org.springframework.data.repository.CrudRepository;
-import org.thinkinghub.gateway.oauth.Entity.AuthenticationHistory;
+public interface AuthenticationHistoryRepository extends JpaRepository<AuthenticationHistory, Long>{
 
-public interface AuthenticationHistoryRepository extends CrudRepository<AuthenticationHistory, Long>{
-	List<AuthenticationHistory> findById(Long id);
 }
