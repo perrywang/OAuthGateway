@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.thinkinghub.gateway.core.extractors.WeixinOAuth2AccessTokenJsonExtractor;
 import org.thinkinghub.gateway.core.service.WeixinOAuthService;
-import org.thinkinghub.gateway.util.Constants;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
@@ -38,14 +37,14 @@ public class WeixinApi extends DefaultApi20 {
      */
     @Override
     public String getAuthorizationBaseUrl() {
-        return Constants.WEIXIN_AUTHORIZE_URL;
+        return "https://open.weixin.qq.com/connect/qrconnect";
     }
 
     @Override
     public String getAuthorizationUrl(OAuthConfig config, Map<String, String> additionalParams) {
         final ParameterList parameters = new ParameterList(additionalParams);
         parameters.add(OAuthConstants.RESPONSE_TYPE, config.getResponseType());
-        parameters.add(Constants.WEBXIN_API_KEY, config.getApiKey());
+        parameters.add("appid", config.getApiKey());
 
         final String callback = config.getCallback();
         if (callback != null) {
@@ -67,7 +66,7 @@ public class WeixinApi extends DefaultApi20 {
 
     @Override
     public String getAccessTokenEndpoint() {
-        return Constants.WEIXIN_ACCESS_TOKEN_URL;
+        return "https://api.weixin.qq.com/sns/oauth2/access_token";
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.service.QQService;
 import org.thinkinghub.gateway.oauth.service.WeiboService;
+import org.thinkinghub.gateway.util.IDGenerator;
 
 @RestController
 public class GatewayController {
@@ -38,7 +39,7 @@ public class GatewayController {
 	
 	@RequestMapping(value="/qq_login", method=RequestMethod.GET)
 	public void qqLogin(@RequestParam("callbackUrl")String custCallbackUrl, HttpServletResponse response){
-		String state = Long.toString(System.currentTimeMillis());
+		String state = Long.toString(IDGenerator.nextId());
 		map.put(state, custCallbackUrl);
 		String returnURL = qqService.getAuthorizationUrl(state);
 		
@@ -87,7 +88,7 @@ public class GatewayController {
 			custCallbackUrl = map.get(state);
 		}
 		GatewayAccessToken token = weiboService.getResult(state, code);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
+			String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
 		HttpHeaders responseHeader = new HttpHeaders();
 		responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
 		return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
