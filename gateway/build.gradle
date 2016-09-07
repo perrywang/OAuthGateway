@@ -24,7 +24,6 @@ repositories {
 
 dependencies {
     compile project(':core')
-    compile('com.google.code.gson:gson:2.7')
     compile('org.springframework.boot:spring-boot-starter')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
