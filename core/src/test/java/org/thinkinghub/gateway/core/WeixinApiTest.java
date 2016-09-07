@@ -1,9 +1,6 @@
 package org.thinkinghub.gateway.core;
 
-
-
 import static org.junit.Assert.assertEquals;
-
 
 import com.github.scribejava.core.model.OAuthConfig;
 
@@ -19,16 +16,18 @@ public class WeixinApiTest {
     public void getAuthorizationBaseUrl() {
         assertEquals(WeixinApi.instance().getAuthorizationBaseUrl(), AUTHORIZE_URL);
     }
-    
+
     @Test
-    public void getAccessTokenEndpoint(){
-        assertEquals(TOKEN_URL,  WeixinApi.instance().getAccessTokenEndpoint());
+    public void getAccessTokenEndpoint() {
+        assertEquals(TOKEN_URL, WeixinApi.instance().getAccessTokenEndpoint());
     }
 
     @Test
-    public void getAuthorizationUrl(){
-        OAuthConfig config = new OAuthConfig("myTestAppid", "myTestSecret",null, null, null, null, null, "code",null, null,null,null);
-        assertEquals(AUTHORIZE_URL + "?response_type=code&appid=myTestAppid", WeixinApi.instance().getAuthorizationUrl(config, null));
+    public void getAuthorizationUrl() {
+        OAuthConfig config = new OAuthConfig("myTestAppid", "myTestSecret", null, null, null, null, null, "code", null,
+                null, null, null);
+        assertEquals(AUTHORIZE_URL + "?response_type=code&appid=myTestAppid",
+                WeixinApi.instance().getAuthorizationUrl(config, null));
     }
 
 }
