@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Configuration
 @ConfigurationProperties(prefix = "weibo")
 public class WeiboConfiguration {
-	private String apiKey;
-	private String apiSecret;
-	private String callback;
-	
+    private String apiKey;
+    private String apiSecret;
+    private String callback;
+
 }

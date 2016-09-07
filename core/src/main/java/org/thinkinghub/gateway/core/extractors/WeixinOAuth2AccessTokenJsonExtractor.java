@@ -15,13 +15,12 @@ public class WeixinOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonE
         return InstanceHolder.INSTANCE;
     }
 
-
     @Override
     public OAuth2AccessToken extract(String response) {
         OAuth2AccessToken baseToken = super.extract(response);
         final String userId = extractParameter(response, USERID_REGEX, true);
 
-        return new GatewayAccessToken(baseToken.getAccessToken(), baseToken.getTokenType(),
-                baseToken.getExpiresIn(), baseToken.getRefreshToken(), baseToken.getScope(), null, userId);
+        return new GatewayAccessToken(baseToken.getAccessToken(), baseToken.getTokenType(), baseToken.getExpiresIn(),
+                baseToken.getRefreshToken(), baseToken.getScope(), null, userId);
     }
 }

@@ -19,13 +19,9 @@ public class WeixinService {
     private WeixinConfiguration weixinConfig;
 
     private OAuth20Service getOAuthService(String state) {
-        OAuth20Service service = new ServiceBuilder()
-                .apiKey(weixinConfig.getApiKey())
-                .apiSecret(weixinConfig.getApiSecret())
-                .callback(OAuthEncoder.encode(weixinConfig.getCallback()))
-                .scope(weixinConfig.getScope())
-                .state(state)
-                .build(WeixinApi.instance());
+        OAuth20Service service = new ServiceBuilder().apiKey(weixinConfig.getApiKey())
+                .apiSecret(weixinConfig.getApiSecret()).callback(OAuthEncoder.encode(weixinConfig.getCallback()))
+                .scope(weixinConfig.getScope()).state(state).build(WeixinApi.instance());
         return service;
     }
 
@@ -40,7 +36,7 @@ public class WeixinService {
     public GatewayAccessToken getResult(String state, String code) {
         GatewayAccessToken accessToken = null;
         try {
-            accessToken = (GatewayAccessToken)getOAuthService(state).getAccessToken(code);
+            accessToken = (GatewayAccessToken) getOAuthService(state).getAccessToken(code);
         } catch (IOException e) {
 
         } finally {

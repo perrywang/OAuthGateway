@@ -17,23 +17,26 @@ public class IDGenerator {
     private static long sequence = 0L;
     private static long lastTimestamp = -1L;
 
+    @SuppressWarnings("static-access")
     public IDGenerator(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
-            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
+            throw new IllegalArgumentException(
+                    String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
         }
 
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
-            throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
+            throw new IllegalArgumentException(
+                    String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
         }
         this.workerId = workerId;
         this.datacenterId = datacenterId;
     }
 
-
     public static synchronized long nextId() {
         long timestamp = timeGen();
         if (timestamp < lastTimestamp) {
-            throw new RuntimeException(String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
+            throw new RuntimeException(String.format(
+                    "Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
         }
 
         if (lastTimestamp == timestamp) {
@@ -46,7 +49,8 @@ public class IDGenerator {
         }
         lastTimestamp = timestamp;
 
-        return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
+        return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift)
+                | (workerId << workerIdShift) | sequence;
 
     }
 

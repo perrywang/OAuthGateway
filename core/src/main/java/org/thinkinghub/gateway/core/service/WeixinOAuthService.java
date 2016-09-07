@@ -6,7 +6,7 @@ import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
-public class WeixinOAuthService extends OAuth20Service{
+public class WeixinOAuthService extends OAuth20Service {
     public WeixinOAuthService(DefaultApi20 api, OAuthConfig config) {
         super(api, config);
     }

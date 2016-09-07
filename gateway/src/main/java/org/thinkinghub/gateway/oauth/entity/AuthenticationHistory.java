@@ -13,24 +13,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "AuthenticationHistory")
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class AuthenticationHistory extends GatewayPersistable {
 
-	private static final long serialVersionUID = 6893602210224518770L;
-	
-	@ManyToOne
-	private User user;
-	
-	@Enumerated(EnumType.STRING)
+    private static final long serialVersionUID = 6893602210224518770L;
+
+    @ManyToOne
+    private User user;
+
+    @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
-    
+
     private boolean isSuccess;
-    
+
     private String errorCode;
-    
+
     private String errorDesc;
-    
+
     public AuthenticationHistory(Long id) {
         super(id);
     }

@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class GatewayPersistable implements Serializable {
-    
+
     private static final long serialVersionUID = 8131162261220407002L;
-    
+
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    public GatewayPersistable(Long id){
+    public GatewayPersistable(Long id) {
         this.id = id;
     }
 }

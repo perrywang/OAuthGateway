@@ -19,11 +19,8 @@ public class WeiboService {
     }
 
     private OAuth20Service getOAuthService(String state) {
-        OAuth20Service service = new ServiceBuilder()
-                .apiKey(weiboConfig.getApiKey())
-                .apiSecret(weiboConfig.getApiSecret())
-                .callback(weiboConfig.getCallback())
-                .state(state)
+        OAuth20Service service = new ServiceBuilder().apiKey(weiboConfig.getApiKey())
+                .apiSecret(weiboConfig.getApiSecret()).callback(weiboConfig.getCallback()).state(state)
                 .build(WeiboApi.instance());
         return service;
     }

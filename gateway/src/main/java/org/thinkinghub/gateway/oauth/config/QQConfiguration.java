@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Configuration
 @ConfigurationProperties(prefix = "qq")
 public class QQConfiguration {
-	private String apiKey;
-	private String apiSecret;
-	private String callback;
+    private String apiKey;
+    private String apiSecret;
+    private String callback;
 }

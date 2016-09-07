@@ -31,7 +31,8 @@ public class WeixinApi extends DefaultApi20 {
     }
 
     /**
-     * see getAuthorizationUrl to understand what parameters will be appended to the base Url.
+     * see getAuthorizationUrl to understand what parameters will be appended to
+     * the base Url.
      *
      * @return
      */
