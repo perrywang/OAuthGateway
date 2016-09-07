@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.thinkinghub.gateway.oauth.bean.WeiboAccessToken;
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.service.QQService;
 import org.thinkinghub.gateway.oauth.service.WeiboService;
 
@@ -85,8 +85,8 @@ public class GatewayController {
 		if(state != null){
 			custCallbackUrl = map.get(state);
 		}
-		WeiboAccessToken token = weiboService.getResult(state, code);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUid();
+		GatewayAccessToken token = weiboService.getResult(state, code);
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
 		HttpHeaders responseHeader = new HttpHeaders();
 		responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
 		return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
