@@ -30,6 +30,7 @@ public class WeixinApi extends DefaultApi20 {
     public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
         return WeixinOAuth2AccessTokenJsonExtractor.instance();
     }
+
     /**
      * see getAuthorizationUrl to understand what parameters will be appended to the base Url.
      *

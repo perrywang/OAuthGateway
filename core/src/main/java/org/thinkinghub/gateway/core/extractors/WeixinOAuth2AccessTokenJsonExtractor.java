@@ -8,10 +8,10 @@ public class WeixinOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonE
     private static final String USERID_REGEX = "\"openid\"\\s*:\\s*\"(\\S*?)\"";
 
     private static class InstanceHolder {
-        private static final QQOAuth2AccessTokenJsonExtractor INSTANCE = new QQOAuth2AccessTokenJsonExtractor();
+        private static final WeixinOAuth2AccessTokenJsonExtractor INSTANCE = new WeixinOAuth2AccessTokenJsonExtractor();
     }
 
-    public static QQOAuth2AccessTokenJsonExtractor instance() {
+    public static WeixinOAuth2AccessTokenJsonExtractor instance() {
         return InstanceHolder.INSTANCE;
     }
 

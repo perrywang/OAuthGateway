@@ -13,4 +13,6 @@ public class WeixinProperties {
     private String apiKey;
     private String apiSecret;
     private String callback;
+    private String scope;
+    private String responseType;
 }

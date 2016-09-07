@@ -2,6 +2,7 @@ package org.thinkinghub.gateway.oauth.service;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.utils.OAuthEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeixinApi;
@@ -9,27 +10,30 @@ import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.WeixinProperties;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class WeixinService {
     @Autowired
     WeixinProperties weixinConfig;
 
-    public WeixinService() {
-    }
-
     private OAuth20Service getOAuthService(String state) {
         OAuth20Service service = new ServiceBuilder()
                 .apiKey(weixinConfig.getApiKey())
                 .apiSecret(weixinConfig.getApiSecret())
-                .callback(weixinConfig.getCallback())
+                .callback(OAuthEncoder.encode(weixinConfig.getCallback()))
+                .scope(weixinConfig.getScope())
                 .state(state)
                 .build(WeixinApi.instance());
         return service;
     }
 
     public String getAuthorizationUrl(String state) {
-        final String authorizationUrl = getOAuthService(state).getAuthorizationUrl();
+        Map<String, String> additionalParams = new HashMap<>();
+        additionalParams.put("response_type", weixinConfig.getResponseType());
+        final String authorizationUrl = getOAuthService(state).getAuthorizationUrl(additionalParams);
+
         return authorizationUrl;
     }
 
