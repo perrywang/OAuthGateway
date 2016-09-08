@@ -10,5 +10,7 @@ import org.thinkinghub.gateway.oauth.entity.User;
 public interface AuthenticationHistoryRepository extends JpaRepository<AuthenticationHistory, Long> {
     
     Page<AuthenticationHistory> findByUserAndServiceType(User user, ServiceType type, Pageable page);
-
+    
+    AuthenticationHistory findByState(String state);
+    
 }
