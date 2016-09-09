@@ -8,6 +8,7 @@ import org.thinkinghub.gateway.api.WeiboApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.config.WeiboConfiguration;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.util.MD5Base64Encoder;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -21,6 +22,9 @@ public class WeiboService {
 	
     @Autowired
     private WeiboConfiguration weiboConfig;
+    
+    @Autowired
+    private ResultHandlingService resultHandlingService;
 
     public WeiboService() {
     }
@@ -48,6 +52,7 @@ public class WeiboService {
     	}
     	return accessToken;
     }
+    
     public String getResult(String state, String code){
         Response response = null;
         String rawResponse = "";
@@ -63,11 +68,9 @@ public class WeiboService {
         } finally {
 
         }
-    	return getRetJson(response.getCode(), rawResponse, ServiceType.WEIBO);
-    }
-    
-    //Johnson will implement this method and replace this one
-    public String getRetJson(int code, String rawResponse, ServiceType service){
-    	return rawResponse;
+        String retJson = resultHandlingService.getRetJson(rawResponse, ServiceType.WEIBO);
+        MD5Base64Encoder.getInstance();
+		String result = MD5Base64Encoder.encode(retJson);
+        return result;
     }
 }
