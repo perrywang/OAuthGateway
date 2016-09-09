@@ -52,7 +52,7 @@ public class GatewayController {
 		} else {
 			switch (service) {
 			case WEIBO:
-				weiboLogin(callbackUrl, response, user, service, request);
+				weiboLogin(callbackUrl, response, user, service);
 				break;
 			case QQ:
 				qqLogin(callbackUrl, response, user, service);
@@ -67,7 +67,7 @@ public class GatewayController {
     private Map<String, String> map = new ConcurrentHashMap<String, String>();
 
 
-    private void weiboLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service, HttpServletRequest request) {
+    private void weiboLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service) {
     	String state = Long.toString(IDGenerator.nextId());
     	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
         dataService.saveAuthHistory(ah);
@@ -108,11 +108,11 @@ public class GatewayController {
             @RequestParam("state") String state) {
     	AuthenticationHistory ah = dataService.getAuthHistory(state);
     	String custCallbackUrl = ah.getCallback();
-    	GatewayAccessToken token = weiboService.getResult(state, code);
+    	String resultStr = weiboService.getResult(state, code);
         ah.setServiceStatus(ServiceStatus.SUCCESS);
         //Save the ServiceStatus to "SUCCESS"
         dataService.saveAuthHistory(ah);
-        String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
+        String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?result=" + resultStr;
         HttpHeaders responseHeader = new HttpHeaders();
         responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
         return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
