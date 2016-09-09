@@ -36,15 +36,24 @@ public class WeiboService {
         final String authorizationUrl = getOAuthService(state).getAuthorizationUrl();
         return authorizationUrl;
     }
-
+    
+    public GatewayAccessToken getAccessToken(String state, String code){
+    	GatewayAccessToken accessToken = null;
+    	try{
+    	accessToken = (GatewayAccessToken) getOAuthService(state).getAccessToken(code);
+    	}catch(IOException e){
+    		
+    	}finally{
+    		
+    	}
+    	return accessToken;
+    }
     public String getResult(String state, String code){
-        GatewayAccessToken accessToken = null;
         Response response = null;
         String rawResponse = "";
         try {
-            accessToken = (GatewayAccessToken) getOAuthService(state).getAccessToken(code);
             OAuth20Service service = getOAuthService(state);
-            
+            GatewayAccessToken accessToken = getAccessToken(state, code);
             final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL+"?uid="+accessToken.getUserId(), service);
             service.signRequest(accessToken, request);
             response = request.send();
