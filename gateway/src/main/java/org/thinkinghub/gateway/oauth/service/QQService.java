@@ -5,9 +5,11 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.QQApi;
 import org.thinkinghub.gateway.oauth.config.QQConfiguration;
+import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -18,6 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class QQService {
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+    
     @Autowired
     private QQConfiguration qqConfig;
 
@@ -41,10 +46,7 @@ public class QQService {
     public void getAccessToken(String custCallback, String state, String code) {
         try {
             final OAuth2AccessToken accessToken = getOAuthService(state).getAccessToken(code);
-            System.out.println("Got the Access Token!");
-            System.out.println("(if your curious it looks like this: " + accessToken + ", 'rawResponse'='"
-                    + accessToken.getRawResponse() + "')");
-
+            eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
         } catch (IOException e) {
 
         }

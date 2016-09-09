@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class OauthGatewayApplication {
+public class OAuthGatewayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OauthGatewayApplication.class, args);
+        SpringApplication.run(OAuthGatewayApplication.class, args);
     }
+
 }
