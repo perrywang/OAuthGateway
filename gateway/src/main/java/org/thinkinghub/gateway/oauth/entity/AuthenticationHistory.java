@@ -38,6 +38,9 @@ public class AuthenticationHistory extends GatewayPersistable {
 
     private String errorDesc;
 
+    private String rawResponse;
+
+
     public AuthenticationHistory(Long id) {
         super(id);
     }
