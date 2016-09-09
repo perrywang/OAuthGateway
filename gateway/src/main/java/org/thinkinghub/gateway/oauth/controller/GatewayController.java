@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
+import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
+import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
@@ -28,6 +31,10 @@ import org.thinkinghub.gateway.util.IDGenerator;
 
 @RestController
 public class GatewayController {
+    
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+    
     @Autowired
     private QQService qqService;
 
@@ -49,16 +56,18 @@ public class GatewayController {
     							 @RequestParam(value="service",required=true) ServiceType service,
     							 HttpServletResponse response, HttpServletRequest request) {
 		User user = userRepository.findByKey(key);
+		String state = Long.toString(IDGenerator.nextId());
 		if (user != null) {
+		    eventPublisher.publishEvent(new StartingRetriveAccessTokenEvent(user, state, callbackUrl));
 			switch (service) {
     			case WEIBO:
-    				weiboLogin(callbackUrl, response, user, service, request);
+    				weiboLogin(state,response);
     				break;
     			case QQ:
-    				qqLogin(callbackUrl, response, user, service);
+    				qqLogin(state,response);
     				break;
     			case WECHAT:
-    				weixinLogin(callbackUrl, response, user, service);
+    				weixinLogin(state,response);
     				break;
     			default: throw new UnsupportedOperationException();
 		    }
@@ -67,10 +76,8 @@ public class GatewayController {
 	}
 
 
-    private void weiboLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service, HttpServletRequest request) {
-    	String state = Long.toString(IDGenerator.nextId());
-    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
-    	authenticationHistoryRepository.save(ah);
+    private void weiboLogin(String state, HttpServletResponse response) {
+
         String returnURL = weiboService.getAuthorizationUrl(state);
         try {
             response.sendRedirect(returnURL);
@@ -79,10 +86,7 @@ public class GatewayController {
         }
     }
     
-    private void qqLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service) {
-        String state = Long.toString(IDGenerator.nextId());
-        AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
-        authenticationHistoryRepository.save(ah);
+    private void qqLogin(String state, HttpServletResponse response) { 
         String returnURL = qqService.getAuthorizationUrl(state);
         try {
             response.sendRedirect(returnURL);
@@ -91,10 +95,7 @@ public class GatewayController {
         }
     }
     
-    private void weixinLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service){
-    	String state = Long.toString(IDGenerator.nextId());
-    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
-    	authenticationHistoryRepository.save(ah);
+    private void weixinLogin(String state, HttpServletResponse response){
         String returnURL = weixinService.getAuthorizationUrl(state);
         try {
             response.sendRedirect(returnURL);
@@ -106,12 +107,14 @@ public class GatewayController {
     @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
     public ResponseEntity<String> requestWeiboAccessToken(HttpServletRequest request, @RequestParam("code") String code,
             @RequestParam("state") String state) {
+    	
+        GatewayAccessToken token = weiboService.getResult(state, code);
+    	
+    	eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, token));
+    	
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+    	
     	String custCallbackUrl = ah.getCallback();
-    	GatewayAccessToken token = weiboService.getResult(state, code);
-        ah.setServiceStatus(ServiceStatus.SUCCESS);
-        //Save the ServiceStatus to "SUCCESS"
-        authenticationHistoryRepository.save(ah);
         String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
         HttpHeaders responseHeader = new HttpHeaders();
         responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
