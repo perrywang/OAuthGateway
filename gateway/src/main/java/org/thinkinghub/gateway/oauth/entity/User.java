@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(indexes= {@Index(unique=true,columnList="key")})
+@Table(indexes = { @Index(unique = true, columnList = "key") })
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class User extends GatewayPersistable {
@@ -40,7 +40,7 @@ public class User extends GatewayPersistable {
     public String toString() {
         return this.getName();
     }
-    
+
     public User(Long id) {
         super(id);
     }

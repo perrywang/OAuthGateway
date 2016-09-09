@@ -5,6 +5,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationHistory extends GatewayPersistable {
 
     private static final long serialVersionUID = 6893602210224518770L;
@@ -22,8 +24,13 @@ public class AuthenticationHistory extends GatewayPersistable {
 
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
-
-    private boolean isSuccess;
+    
+    private String callback;
+    
+    private String state;
+    
+    @Enumerated(EnumType.STRING)
+    private ServiceStatus serviceStatus;
 
     private String errorCode;
 
