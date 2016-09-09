@@ -1,10 +1,7 @@
 package org.thinkinghub.gateway.oauth.controller;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,24 +44,22 @@ public class GatewayController {
     							 @RequestParam(value="service",required=true) ServiceType service,
     							 HttpServletResponse response, HttpServletRequest request) {
 		User user = dataService.getUser(key);
-		if (user == null) {
-//			throw new Exception("Your key"+ key + "is not correct");
-		} else {
+		if (user != null) {
 			switch (service) {
-			case WEIBO:
-				weiboLogin(callbackUrl, response, user, service, request);
-				break;
-			case QQ:
-				qqLogin(callbackUrl, response, user, service);
-				break;
-			case WECHAT:
-				weixinLogin(callbackUrl, response, user, service);
-				break;
-			}
-		}
+    			case WEIBO:
+    				weiboLogin(callbackUrl, response, user, service, request);
+    				break;
+    			case QQ:
+    				qqLogin(callbackUrl, response, user, service);
+    				break;
+    			case WECHAT:
+    				weixinLogin(callbackUrl, response, user, service);
+    				break;
+    			default: throw new UnsupportedOperationException();
+		    }
+	    }
+		throw new IllegalStateException();
 	}
-
-    private Map<String, String> map = new ConcurrentHashMap<String, String>();
 
 
     private void weiboLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service, HttpServletRequest request) {

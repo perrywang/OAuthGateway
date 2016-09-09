@@ -12,10 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RedisService {
     
-    @SuppressWarnings({ "rawtypes", "unused" })
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<Object,Object> redisTemplate;
     
+    private final String DEFAULT_HASH_KEY = "DEFAULT_HASH_KEY_GATEWAY";
+     
+    public void put(Object key, Object value) {
+        redisTemplate.boundHashOps(DEFAULT_HASH_KEY).put(key, value);
+    }
+    
+    public Object get(Object key) {
+        return redisTemplate.boundHashOps(DEFAULT_HASH_KEY).get(key);
+    }
     
     @PostConstruct
     public void initialize() {
