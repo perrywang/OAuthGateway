@@ -1,9 +1,10 @@
 package org.thinkinghub.gateway.oauth.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,13 +12,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Table(indexes= {@Index(unique=true,columnList="key")})
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class User extends GatewayPersistable {
 
     private static final long serialVersionUID = 7170397482816364599L;
 
-    @Column(unique = true)
     private String key;
 
     private String name;
