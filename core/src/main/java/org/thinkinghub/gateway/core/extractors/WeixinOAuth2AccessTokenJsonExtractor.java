@@ -6,6 +6,8 @@ import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 
 public class WeixinOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonExtractor {
     private static final String USERID_REGEX = "\"openid\"\\s*:\\s*\"(\\S*?)\"";
+    private static final String ERRORCODE_REGEX = "\"errcode\"\\s*:\\s*\"(\\S*?)\"";
+    private static final String ERRORDESC_REGEX = "\"errmsg\"\\s*:\\s*\"(\\S*?)\"";
 
     private static class InstanceHolder {
         private static final WeixinOAuth2AccessTokenJsonExtractor INSTANCE = new WeixinOAuth2AccessTokenJsonExtractor();
@@ -17,10 +19,16 @@ public class WeixinOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonE
 
     @Override
     public OAuth2AccessToken extract(String response) {
+        String errorCode = extractParameter(response, ERRORCODE_REGEX, false);
+        if(errorCode != null){
+            String errorDesc = extractParameter(response, ERRORDESC_REGEX, false);
+            return new GatewayAccessToken(errorCode, errorDesc, response);
+        }
+
         OAuth2AccessToken baseToken = super.extract(response);
         final String userId = extractParameter(response, USERID_REGEX, true);
 
         return new GatewayAccessToken(baseToken.getAccessToken(), baseToken.getTokenType(), baseToken.getExpiresIn(),
-                baseToken.getRefreshToken(), baseToken.getScope(), null, userId);
+                baseToken.getRefreshToken(), baseToken.getScope(), response, userId);
     }
 }
