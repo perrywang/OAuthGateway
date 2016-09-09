@@ -10,7 +10,7 @@ public abstract class ResponseExtractor {
     private static String COMMON_JSON_REGEX = "\"%s\"\\s*:\\s*\"(\\S*?)\"";
     private static String COMMON_URLPARAM_REGEX = "\"%s\"\\s*=\\s*\"(\\S*?)\"";
 
-    abstract RetBean extract(String response);
+    public abstract RetBean extract(String response);
 
     String getJsonRegex(String name) {
         return String.format(COMMON_JSON_REGEX, name);

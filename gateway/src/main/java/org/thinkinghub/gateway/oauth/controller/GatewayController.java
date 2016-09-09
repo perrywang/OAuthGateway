@@ -1,13 +1,5 @@
 package org.thinkinghub.gateway.oauth.controller;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +18,12 @@ import org.thinkinghub.gateway.oauth.service.QQService;
 import org.thinkinghub.gateway.oauth.service.WeiboService;
 import org.thinkinghub.gateway.oauth.service.WeixinService;
 import org.thinkinghub.gateway.util.IDGenerator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class GatewayController {
@@ -69,7 +67,7 @@ public class GatewayController {
 
     private void weiboLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service, HttpServletRequest request) {
     	String state = Long.toString(IDGenerator.nextId());
-    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
+    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null, null);
         dataService.saveAuthHistory(ah);
         String returnURL = weiboService.getAuthorizationUrl(state);
         try {
@@ -81,7 +79,7 @@ public class GatewayController {
     
     private void qqLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service) {
         String state = Long.toString(IDGenerator.nextId());
-        AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
+        AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null, null);
         dataService.saveAuthHistory(ah);
         String returnURL = qqService.getAuthorizationUrl(state);
         try {
@@ -93,7 +91,7 @@ public class GatewayController {
     
     private void weixinLogin(String custCallbackUrl, HttpServletResponse response, User user, ServiceType service){
     	String state = Long.toString(IDGenerator.nextId());
-    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null);
+    	AuthenticationHistory ah = new AuthenticationHistory(user, service, custCallbackUrl, state, ServiceStatus.INPROGRESS, null, null, null);
         dataService.saveAuthHistory(ah);
         String returnURL = weixinService.getAuthorizationUrl(state);
         try {
@@ -130,6 +128,7 @@ public class GatewayController {
         dataService.saveAuthHistory(ah);
         String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?" + tokenStr;
         HttpHeaders responseHeader = new HttpHeaders();
+        //TODO when call service to get the final Json, need to put openid in raw response as openid is not included in it.
         responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
         return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
     }
