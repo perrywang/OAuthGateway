@@ -12,15 +12,15 @@ import org.thinkinghub.gateway.oauth.extractor.ResponseExtractor;
 @Service
 public class ResultHandlingService {
     @Autowired
-    @Qualifier("WeixinResponseExtractor")
+    @Qualifier("Weixin")
     private ResponseExtractor WeixinExtractor;
 
     @Autowired
-    @Qualifier("WeiboResponseExtractor")
+    @Qualifier("Weibo")
     private ResponseExtractor WeiboExtractor;
 
     @Autowired
-    @Qualifier("QQResponseExtractor")
+    @Qualifier("QQ")
     private ResponseExtractor QQExtractor;
 
     public RetBean getRetBean(String rawResponse, ServiceType service){

@@ -25,6 +25,7 @@ import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.QQService;
+import org.thinkinghub.gateway.oauth.service.QueueService;
 import org.thinkinghub.gateway.oauth.service.WeiboService;
 import org.thinkinghub.gateway.oauth.service.WeixinService;
 import org.thinkinghub.gateway.util.IDGenerator;
@@ -49,6 +50,9 @@ public class GatewayController {
     
     @Autowired
     private AuthenticationHistoryRepository authenticationHistoryRepository;
+
+    @Autowired
+    QueueService queueService;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value="callbackUrl",required=true) String callbackUrl,
@@ -109,10 +113,13 @@ public class GatewayController {
             @RequestParam("state") String state) {
         String resultStr = weiboService.getResult(state, code);
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        //TODO here needs to add all required data in ah
+        queueService.add(ah);
     	String custCallbackUrl = ah.getCallback();
     	String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?result=" + resultStr;
         HttpHeaders responseHeader = new HttpHeaders();
         responseHeader.set(HttpHeaders.LOCATION, redirectUrl);
+
         return new ResponseEntity<String>("Success", responseHeader, HttpStatus.TEMPORARY_REDIRECT);
     }
     

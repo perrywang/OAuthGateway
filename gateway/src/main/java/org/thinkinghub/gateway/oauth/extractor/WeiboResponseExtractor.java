@@ -1,9 +1,11 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
+import org.springframework.stereotype.Component;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
-public class WeiboResponseExtractor extends ResponseExtractor{
+@Component("Weibo")
+public class WeiboResponseExtractor extends BaseResponseExtractor {
     private final String USERID = "id";
     private final String NICKNAME = "screen_name";
     private final String HEADIMAGE_URL = "profile_image_url";
