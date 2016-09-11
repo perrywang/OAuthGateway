@@ -71,8 +71,9 @@ public class GatewayController {
     				break;
     			default: throw new UnsupportedOperationException();
 		    }
-	    }
+	    }else{
 		throw new UserNotFoundException(String.format("can not find valid user relating with key: %s",key));
+	    }
 	}
 
 
@@ -106,9 +107,7 @@ public class GatewayController {
     @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
     public ResponseEntity<String> requestWeiboAccessToken(HttpServletRequest request, @RequestParam("code") String code,
             @RequestParam("state") String state) {
-    	GatewayAccessToken token = weiboService.getAccessToken(state, code);
         String resultStr = weiboService.getResult(state, code);
-    	eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, token));
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
     	String custCallbackUrl = ah.getCallback();
     	String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?result=" + resultStr;
