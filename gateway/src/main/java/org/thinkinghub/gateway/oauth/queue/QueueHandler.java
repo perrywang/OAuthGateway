@@ -1,4 +1,4 @@
-package queue;
+package org.thinkinghub.gateway.oauth.queue;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,7 +22,7 @@ public class QueueHandler implements InitializingBean{
 
     @PostConstruct
     public void handle() {
-        log.debug("Start handling all pending tasks in queue");
+        log.debug("Start handling all pending tasks in org.thinkinghub.gateway.oauth.queue");
         new Executor().start();
     }
 
@@ -33,7 +33,7 @@ public class QueueHandler implements InitializingBean{
                 try {
                     ah = queue.get();
                 } catch (InterruptedException e) {
-                    log.error("Errors happen while getting object from queue", e);
+                    log.error("Errors happen while getting object from org.thinkinghub.gateway.oauth.queue", e);
                 }
 
                 if (ah != null) {

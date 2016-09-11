@@ -1,10 +1,12 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
 
+import org.springframework.stereotype.Component;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
-public class QQResponseExtrator extends ResponseExtractor {
+@Component("QQ")
+public class QQResponseExtrator extends BaseResponseExtractor {
     private final String RET = "ret"; //if ret is not 0, the error code will be stored in it.
     private final String USERID = "openid";
     private final String NICKNAME = "nickname";
@@ -14,7 +16,7 @@ public class QQResponseExtrator extends ResponseExtractor {
     @Override
     public RetBean extract(String response) {
         String ret = extractParameter(response, getJsonRegex(RET));
-        if(("0").equals(ret)){
+        if(!("0").equals(ret)){
             String errorDesc = extractParameter(response, getJsonRegex(ERRORDESC));
             return new RetBean(ret, errorDesc, ServiceType.QQ);
         }

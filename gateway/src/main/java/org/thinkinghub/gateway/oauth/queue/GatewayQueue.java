@@ -1,4 +1,4 @@
-package queue;
+package org.thinkinghub.gateway.oauth.queue;
 
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
@@ -15,7 +15,7 @@ public class GatewayQueue {
     }
 
     public AuthenticationHistory get() throws InterruptedException {
-        //return queue.poll(10000, TimeUnit.MICROSECONDS);
+        //return org.thinkinghub.gateway.oauth.queue.poll(10000, TimeUnit.MICROSECONDS);
         return queue.take();
     }
 
