@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
-import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
-import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.entity.User;
+import org.thinkinghub.gateway.oauth.entity.*;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
@@ -175,6 +172,7 @@ public class GatewayController {
             ah.setErrorCode(ret.getErrorCode());
             ah.setErrorDesc(ret.getErrorDesc());
             ah.setServiceStatus(ServiceStatus.FAILURE);
+            ah.setErrorType(ErrorType.THIRDPARTY);
         }else{
             ah.setServiceStatus(ServiceStatus.SUCCESS);
         }
