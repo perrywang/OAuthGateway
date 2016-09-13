@@ -43,13 +43,13 @@ public class QQResponseExtrator extends BaseResponseExtractor {
         //if ret is not 0, the error code will be stored in it.
         if(!("0").equals(ret)){
             String errorDesc = extractParameter(response, getUrlParamRegex(getErrorDesc()));
-            return new RetBean(ret, errorDesc, getServiceType());
+            return new RetBean(ret, errorDesc, getServiceType(), response);
         }
 
         String userId = extractParameter(response, getUrlParamRegex(getUserId()));
         String nickname = extractParameter(response, getUrlParamRegex(getNickname()));
         String headImage = extractParameter(response, getUrlParamRegex(getHeadImageUrl()));
 
-        return new RetBean(userId, nickname, headImage, getServiceType());
+        return new RetBean(userId, nickname, headImage, getServiceType(), response);
     }
 }

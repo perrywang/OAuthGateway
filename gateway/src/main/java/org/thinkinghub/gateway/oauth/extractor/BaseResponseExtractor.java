@@ -35,14 +35,14 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
         String errorCode = extractParameter(response, getJsonRegex(getErrorCode()));
         if (errorCode != null) {
             String errorDesc = extractParameter(response, getJsonRegex(getErrorDesc()));
-            return new RetBean(errorCode, errorDesc, getServiceType());
+            return new RetBean(errorCode, errorDesc, getServiceType(), response);
         }
 
         String userId = extractParameter(response, getJsonRegex(getUserId()));
         String nickname = extractParameter(response, getJsonRegex(getNickname()));
         String headImage = extractParameter(response, getJsonRegex(getHeadImageUrl()));
 
-        return new RetBean(userId, nickname, headImage, getServiceType());
+        return new RetBean(userId, nickname, headImage, getServiceType(), response);
     }
 
     protected static String extractParameter(String response, String regex) throws OAuthException {
