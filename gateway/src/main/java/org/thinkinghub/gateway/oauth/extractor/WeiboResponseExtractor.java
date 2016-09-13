@@ -5,28 +5,34 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 @Component("Weibo")
 public class WeiboResponseExtractor extends BaseResponseExtractor {
-    
-    public String getUserIdFieldName(){
-    	return "id";
-    }
 
-    public String getNickNameFieldName(){
-    	return "screen_name";
-    }
+	@Override
+	public String getUserIdFieldName() {
+		return "id";
+	}
 
-    public String getHeadImageUrlFieldName(){
-    	return "profile_image_url";
-    }
+	@Override
+	public String getNickNameFieldName() {
+		return "screen_name";
+	}
 
-    public String getErrorCodeFieldName() {
-        return "error_code";
-    }
+	@Override
+	public String getHeadImageUrlFieldName() {
+		return "profile_image_url";
+	}
 
-    public String getErrorDescFieldName() {
-        return "error_description";
-    }
+	@Override
+	public String getErrorCodeFieldName() {
+		return "error_code";
+	}
 
-    public ServiceType getServiceType() {
-        return ServiceType.WEIBO;
-    }
+	@Override
+	public String getErrorDescFieldName() {
+		return "error_description";
+	}
+
+	@Override
+	ServiceType getServiceType() {
+		return ServiceType.WEIBO;
+	}
 }

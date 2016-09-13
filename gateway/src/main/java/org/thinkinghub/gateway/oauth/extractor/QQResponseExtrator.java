@@ -13,7 +13,6 @@ import com.github.scribejava.core.model.Response;
 
 @Component("QQ")
 public class QQResponseExtrator extends BaseResponseExtractor {
-
 	public String getUserIdFieldName() {
 		return null;
 	}
@@ -54,5 +53,4 @@ public class QQResponseExtrator extends BaseResponseExtractor {
 		return ServiceType.QQ;
 	}
 
-	// public boolean hasError()
 }

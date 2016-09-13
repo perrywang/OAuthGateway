@@ -5,28 +5,34 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 @Component("Weixin")
 public class WeixinResponseExtractor extends BaseResponseExtractor {
-    
-    public String getUserIdFieldName(){
-    	return "openid";
-    }
 
-    public String getNickNameFieldName(){
-    	return "nickname";
-    }
+	@Override
+	public String getUserIdFieldName() {
+		return "openid";
+	}
 
-    public String getHeadImageUrlFieldName(){
-    	return "headimgurl";
-    }
+	@Override
+	public String getNickNameFieldName() {
+		return "nickname";
+	}
 
-    public String getErrorCodeFieldName() {
-        return "errcode";
-    }
+	@Override
+	public String getHeadImageUrlFieldName() {
+		return "headimgurl";
+	}
 
-    public String getErrorDescFieldName() {
-        return "errmsg";
-    }
-    
-    public ServiceType getServiceType() {
-        return ServiceType.WECHAT;
-    }
+	@Override
+	public String getErrorCodeFieldName() {
+		return "errcode";
+	}
+
+	@Override
+	public String getErrorDescFieldName() {
+		return "errmsg";
+	}
+
+	@Override
+	ServiceType getServiceType() {
+		return ServiceType.WECHAT;
+	}
 }

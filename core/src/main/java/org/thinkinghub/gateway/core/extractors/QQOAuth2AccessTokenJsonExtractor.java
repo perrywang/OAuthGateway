@@ -1,9 +1,9 @@
 package org.thinkinghub.gateway.core.extractors;
 
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
+
 import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.utils.Preconditions;
-import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 
 public class QQOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonExtractor {
     private final String ACCESS_TOKEN_REGEX = "access_token\\s*=(\\s*[a-z0-9A-Z]*)?";

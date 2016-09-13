@@ -1,5 +1,6 @@
 package org.thinkinghub.gateway.oauth.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,18 +31,23 @@ public class RetBean {
     @JsonProperty("error_desc")
     private String errorDesc;
 
-    public RetBean(int errorCode, String errorDesc, ServiceType service) {
+    @JsonIgnore
+    private String rawResponse;
+
+    public RetBean(int errorCode, String errorDesc, ServiceType service, String rawResponse) {
         this.retCode = 1;
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
         this.service = service;
+        this.rawResponse = rawResponse;
     }
 
-    public RetBean(String userId, String nickname, String headImage, ServiceType service) {
+    public RetBean(String userId, String nickname, String headImage, ServiceType service, String rawResponse) {
         this.retCode = 0;
         this.userId = userId;
         this.nickname = nickname;
         this.headImage = headImage;
         this.service = service;
+        this.rawResponse = rawResponse;
     }
 }

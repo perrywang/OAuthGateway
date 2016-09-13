@@ -1,6 +1,7 @@
 package org.thinkinghub.gateway.oauth.controller;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,13 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
+import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.queue.AuthHistoryQueueTask;
+import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.AbstractOAuthService;
@@ -26,19 +29,23 @@ import org.thinkinghub.gateway.oauth.service.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 import org.thinkinghub.gateway.util.IDGenerator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 public class GatewayController {
 
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthenticationHistoryRepository authenticationHistoryRepository;
+
     @Autowired
     private QueueService queueService;
-
-	@Autowired
-	private AuthenticationHistoryRepository authenticationHistoryRepository;
 
 	@RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
 	public void route(@RequestParam(value = "callbackUrl", required = true) String callbackUrl,
@@ -65,6 +72,7 @@ public class GatewayController {
 		}
 	}
 
+
     @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
     public void requestWeiboAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestParam("code") String code,
             @RequestParam("state") String state) {
@@ -73,12 +81,12 @@ public class GatewayController {
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 
         //TODO here needs to add all required data in ah
-        queueService.put(new AuthHistoryQueueTask(ah){
-            @Override
-            public void execute() {
-                authenticationHistoryRepository.save(ah);
-            }
-        });
+//        queueService.put(new AuthHistoryQueueTask(ah){
+//            @Override
+//            public void execute() {
+//                authenticationHistoryRepository.save(ah);
+//            }
+//        });
 		String custCallbackUrl = ah.getCallback();
 		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + resultStr + "&md5signature="
 				+ getMD5Signature(resultStr);
@@ -127,4 +135,31 @@ public class GatewayController {
 	private String getMD5Signature(String str) {
 		return MD5Encrypt.hashing(str);
 	}
+
+    private void logAuthHistory(AuthenticationHistory ah, RetBean ret){
+        ah.setServiceType(ServiceType.WEIBO);
+        if(ret.getRetCode() == 0){
+            ah.setErrorCode(ret.getErrorCode());
+            ah.setErrorDesc(ret.getErrorDesc());
+            ah.setServiceStatus(ServiceStatus.FAILURE);
+            ah.setErrorType(ErrorType.THIRDPARTY);
+        }else{
+            ah.setServiceStatus(ServiceStatus.SUCCESS);
+        }
+        ah.setRawResponse(ret.getRawResponse());
+
+        queueService.put(new QueuableTask() {
+            @Override
+            public void execute() {
+                authenticationHistoryRepository.save(ah);
+            }
+        });
+    }
+
+    private String handleResult(RetBean bean) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        byte[] retJsonBytes = om.writeValueAsBytes(bean);
+        return Base64.getEncoder().encodeToString(retJsonBytes);
+    }
+
 }

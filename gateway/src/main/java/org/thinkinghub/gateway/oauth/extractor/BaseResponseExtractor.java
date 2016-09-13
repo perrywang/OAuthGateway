@@ -11,24 +11,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.Response;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
-
 	public RetBean extract(Response response) {
 		JsonNode root = null;
 		try {
 			ObjectMapper om = new ObjectMapper();
 			root = om.readTree(response.getBody());
+			if (hasError(response)) {
+				String userId = getUserId(response);
+				String nickName = root.get(getNickNameFieldName()).asText();
+				String headImageUrl = root.get(getHeadImageUrlFieldName()).asText();
+				return new RetBean(userId, nickName, headImageUrl, getServiceType(), response.getBody());
+			} else {
+				int errorCode = root.get(getErrorCodeFieldName()).asInt();
+				String errorDesc = root.get(getErrorDescFieldName()).asText();
+				return new RetBean(errorCode, errorDesc, getServiceType(), response.getBody());
+			}
 		} catch (IOException e) {
-
-		}
-		if (hasError(response)) {
-			String userId = getUserId(response);
-			String nickName = root.get(getNickNameFieldName()).asText();
-			String headImageUrl = root.get(getHeadImageUrlFieldName()).asText();
-			return new RetBean(userId, nickName, headImageUrl, getServiceType());
-		} else {
-			int errorCode = root.get(getErrorCodeFieldName()).asInt();
-			String errorDesc = root.get(getErrorDescFieldName()).asText();
-			return new RetBean(errorCode, errorDesc, getServiceType());
+			throw new GatewayException("can't extract data from response ", e);
 		}
 	}
 
