@@ -1,21 +1,20 @@
 package org.thinkinghub.gateway.oauth.queue;
 
 import org.springframework.stereotype.Service;
-import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 @Service
 public class GatewayQueue {
-    BlockingQueue<AuthenticationHistory> queue = new LinkedBlockingDeque<>();
+    BlockingQueue<QueueTask> queue = new LinkedBlockingDeque<>();
+    private final String name = "gateway";
 
-    public void addElement(AuthenticationHistory ah){
-        queue.add(ah);
+    public void addTask(QueueTask task){
+        queue.add(task);
     }
 
-    public AuthenticationHistory get() throws InterruptedException {
-        //return org.thinkinghub.gateway.oauth.queue.poll(10000, TimeUnit.MICROSECONDS);
+    public QueueTask get() throws InterruptedException {
         return queue.take();
     }
 

@@ -4,19 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
-import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 
 import javax.annotation.PostConstruct;
 
 @Service
 @Slf4j
-public class QueueHandler implements InitializingBean{
+public class QueueConsumer implements InitializingBean{
     @Autowired
     private GatewayQueue queue;
-
-    @Autowired
-    private AuthenticationHistoryRepository ahRepository;
 
     public boolean shutdown;
 
@@ -29,16 +24,13 @@ public class QueueHandler implements InitializingBean{
     class Executor extends Thread {
         public void run() {
             while (!shutdown) {
-                AuthenticationHistory ah = null;
+                QueueTask qt = null;
                 try {
-                    ah = queue.get();
+                    qt = queue.get();
                 } catch (InterruptedException e) {
                     log.error("Errors happen while getting object from org.thinkinghub.gateway.oauth.queue", e);
                 }
-
-                if (ah != null) {
-                    ahRepository.save(ah);
-                }
+                qt.execute();
             }
         }
     }

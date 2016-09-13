@@ -6,24 +6,33 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 @Component("Weibo")
 public class WeiboResponseExtractor extends BaseResponseExtractor {
-    private final String USERID = "id";
-    private final String NICKNAME = "screen_name";
-    private final String HEADIMAGE_URL = "profile_image_url";
-    private final String ERRORCODE = "error_code";
-    private final String ERRORDESC = "error_description";
+    @Override
+    String getUserId() {
+        return "id";
+    }
 
     @Override
-    public RetBean extract(String response) {
-        String errorCode = extractParameter(response, getJsonRegex(ERRORCODE));
-        if(errorCode != null){
-            String errorDesc = extractParameter(response, getJsonRegex(ERRORDESC));
-            return new RetBean(errorCode, errorDesc, ServiceType.WEIBO);
-        }
+    String getNickname() {
+        return "screen_name";
+    }
 
-        String userId = extractParameter(response, getJsonRegex(USERID));
-        String nickname = extractParameter(response, getJsonRegex(NICKNAME));
-        String headImage = extractParameter(response, getJsonRegex(HEADIMAGE_URL));
+    @Override
+    String getHeadImageUrl() {
+        return "profile_image_url";
+    }
 
-        return new RetBean(userId, nickname, headImage, ServiceType.WEIBO);
+    @Override
+    String getErrorCode() {
+        return "error_code";
+    }
+
+    @Override
+    String getErrorDesc() {
+        return "error_description";
+    }
+
+    @Override
+    Enum getServiceType() {
+        return ServiceType.WEIBO;
     }
 }

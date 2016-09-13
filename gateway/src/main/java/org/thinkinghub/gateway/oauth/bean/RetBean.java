@@ -5,28 +5,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RetBean {
-
     @JsonProperty("return_code")
     private String retCode; // 0: success, 1: failure
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("uid")
     private String userId;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String nickname;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String headImage;
 
     private Enum service;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("error_code")
     private String errorCode;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("error_desc")
     private String errorDesc;
 

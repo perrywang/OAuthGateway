@@ -9,24 +9,33 @@ import javax.annotation.Resource;
 
 @Component("Weixin")
 public class WeixinResponseExtractor extends BaseResponseExtractor {
-    private static final String USERID = "openid";
-    private final String NICKNAME = "nickname";
-    private final String HEADIMAGE_URL = "headimgurl";
-    private static final String ERRORCODE = "errcode";
-    private static final String ERRORDESC = "errmsg";
+    @Override
+    String getUserId() {
+        return "openid";
+    }
 
     @Override
-    public RetBean extract(String response) {
-        String errorCode = extractParameter(response, getJsonRegex(ERRORCODE));
-        if(errorCode != null){
-            String errorDesc = extractParameter(response, getJsonRegex(ERRORDESC));
-            return new RetBean(errorCode, errorDesc, ServiceType.WEIBO);
-        }
+    String getNickname() {
+        return "nickname";
+    }
 
-        String userId = extractParameter(response, getJsonRegex(USERID));
-        String nickname = extractParameter(response, getJsonRegex(NICKNAME));
-        String headImage = extractParameter(response, getJsonRegex(HEADIMAGE_URL));
+    @Override
+    String getHeadImageUrl() {
+        return "headimgurl";
+    }
 
-        return new RetBean(userId, nickname, headImage, ServiceType.WECHAT);
+    @Override
+    String getErrorCode() {
+        return "errcode";
+    }
+
+    @Override
+    String getErrorDesc() {
+        return "errmsg";
+    }
+
+    @Override
+    Enum getServiceType() {
+        return ServiceType.WECHAT;
     }
 }
