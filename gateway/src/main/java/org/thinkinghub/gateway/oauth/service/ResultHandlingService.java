@@ -1,13 +1,14 @@
 package org.thinkinghub.gateway.oauth.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.extractor.ResponseExtractor;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ResultHandlingService {
@@ -24,6 +25,8 @@ public class ResultHandlingService {
     private ResponseExtractor QQExtractor;
 
     public RetBean getRetBean(String rawResponse, ServiceType service){
+    	
+//    	return ResponseExtractors.of(service).extract(rawResponse);
         switch(service){
             case WECHAT:
                 return WeixinExtractor.extract(rawResponse);

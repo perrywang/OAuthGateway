@@ -1,10 +1,15 @@
 package org.thinkinghub.gateway.oauth.bean;
 
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class RetBean {
 
     @JsonProperty("return_code")
@@ -20,7 +25,7 @@ public class RetBean {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String headImage;
 
-    private Enum service;
+    private ServiceType service;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("error_code")
@@ -30,14 +35,14 @@ public class RetBean {
     @JsonProperty("error_desc")
     private String errorDesc;
 
-    public RetBean(String errorCode, String errorDesc, Enum service) {
+    public RetBean(String errorCode, String errorDesc, ServiceType service) {
         this.retCode = "1";
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
         this.service = service;
     }
 
-    public RetBean(String userId, String nickname, String headImage, Enum service) {
+    public RetBean(String userId, String nickname, String headImage, ServiceType service) {
         this.retCode = "0";
         this.userId = userId;
         this.nickname = nickname;

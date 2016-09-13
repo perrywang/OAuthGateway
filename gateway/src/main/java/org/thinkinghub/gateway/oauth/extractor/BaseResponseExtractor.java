@@ -1,16 +1,34 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import com.github.scribejava.core.exceptions.OAuthException;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.github.scribejava.core.exceptions.OAuthException;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor{
     private static String COMMON_JSON_REGEX = "\"%s\"\\s*:\\s*\"(\\S*?)\"";
     private static String COMMON_URLPARAM_REGEX = "\"%s\"\\s*=\\s*\"(\\S*?)\"";
 
-    public abstract RetBean extract(String response);
+//    public RetBean extract(String response) {
+//    	
+//    	ObjectMapper om = new ObjectMapper();
+//    	om.readTree(response).get(getErrorCodeFieldName());
+//    	
+//    	String ddd = getxxx();
+//    	
+//    	return new RetBean();
+//    }
+//    
+//    public String getErrorCodeFieldName() {
+//    	return "errorCode";
+//    }
+//    
+//    
+//    
+//    String getErrorCode(String response) {
+//    	ObjectMapper om = new ObjectMapper();
+//    	return om.readTree(response).get(getErrorCodeFieldName());
+//    }
 
     String getJsonRegex(String name) {
         return String.format(COMMON_JSON_REGEX, name);
