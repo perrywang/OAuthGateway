@@ -22,7 +22,7 @@ import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.queue.AuthHistoryQueueTask;
+import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.QQService;
@@ -53,7 +53,7 @@ public class GatewayController {
     private AuthenticationHistoryRepository authenticationHistoryRepository;
 
     @Autowired
-    QueueService queueService;
+    private QueueService queueService;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value="callbackUrl",required=true) String callbackUrl,
@@ -120,7 +120,12 @@ public class GatewayController {
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 
         //TODO here needs to add all required data in ah
-        queueService.add(new AuthHistoryQueueTask(ah));
+        queueService.put(new QueuableTask(){
+            @Override
+            public void execute() {
+                authenticationHistoryRepository.save(ah);
+            }
+        });
 
     	String custCallbackUrl = ah.getCallback();
         String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token.getUserId();
