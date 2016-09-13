@@ -17,6 +17,7 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
+import org.thinkinghub.gateway.oauth.queue.AuthHistoryQueueTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.AbstractOAuthService;
@@ -33,12 +34,11 @@ public class GatewayController {
 
 	@Autowired
 	private UserRepository userRepository;
+    @Autowired
+    private QueueService queueService;
 
 	@Autowired
 	private AuthenticationHistoryRepository authenticationHistoryRepository;
-
-	@Autowired
-	QueueService queueService;
 
 	@RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
 	public void route(@RequestParam(value = "callbackUrl", required = true) String callbackUrl,
@@ -65,19 +65,25 @@ public class GatewayController {
 		}
 	}
 
-	@RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
-	public void requestWeiboAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestParam("code") String code,
-			@RequestParam("state") String state) {
-		AbstractOAuthService oauthService = ServiceRegistry.instance().getService(ServiceType.WEIBO);
-		String resultStr = oauthService.getUserInfo(state, code);
-		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		// TODO here needs to add all required data in ah
-		queueService.add(ah);
+    @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
+    public void requestWeiboAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestParam("code") String code,
+            @RequestParam("state") String state) {
+    	AbstractOAuthService weiboService = ServiceRegistry.instance().getService(ServiceType.WEIBO);
+    	String resultStr = weiboService.getUserInfo(state, code);
+    	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+
+        //TODO here needs to add all required data in ah
+        queueService.put(new AuthHistoryQueueTask(ah){
+            @Override
+            public void execute() {
+                authenticationHistoryRepository.save(ah);
+            }
+        });
 		String custCallbackUrl = ah.getCallback();
 		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + resultStr + "&md5signature="
 				+ getMD5Signature(resultStr);
 		redirect(response, redirectUrl);
-	}
+    }
 
 	@RequestMapping(value = "/oauth/qq", method = RequestMethod.GET)
 	public void requestQQAccessToken(HttpServletRequest request, HttpServletResponse response,
@@ -85,12 +91,14 @@ public class GatewayController {
 			@RequestParam(value = "state", required = true) String state) {
 		AbstractOAuthService oauthService = ServiceRegistry.instance().getService(ServiceType.QQ);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+		
 		String custCallbackUrl = ah.getCallback();
-		String tokenStr = oauthService.getUserInfo(state, code);
+		String resultStr = oauthService.getUserInfo(state, code);
 		ah.setServiceStatus(ServiceStatus.SUCCESS);
 		// Save the ServiceStatus to "SUCCESS"
 		authenticationHistoryRepository.save(ah);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?" + tokenStr;
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + resultStr + "&md5signature="
+				+ getMD5Signature(resultStr);
 		redirect(response, redirectUrl);
 	}
 

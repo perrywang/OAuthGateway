@@ -44,4 +44,8 @@ public class MD5Encrypt {
 		}
 		return resultString;
 	}
+	public static void main(String[] args){
+		String str = "eyJuaWNrbmFtZSI6Inp5eWV0dGllIiwiaGVhZEltYWdlIjoiaHR0cDovL3R2YTMuc2luYWltZy5j%20%20bi9jcm9wLjcuNy4xMTIuMTEyLjUwLzU0MmVlMDZmancxZXg2dHFxbHdvN2oyMDNjMDNjZ2xsLmpw%20%20ZyIsInNlcnZpY2UiOiJXRUlCTyIsInJldHVybl9jb2RlIjowLCJ1aWQiOiIxNDEyMzU4MjU1Iiwi%20%20ZXJyb3JfY29kZSI6MH0=";
+		System.out.println(MD5Encode(str));
+	}
 }

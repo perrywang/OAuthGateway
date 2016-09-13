@@ -1,32 +1,32 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
-
-import javax.annotation.Resource;
 
 @Component("Weixin")
 public class WeixinResponseExtractor extends BaseResponseExtractor {
-    private static final String USERID = "openid";
-    private final String NICKNAME = "nickname";
-    private final String HEADIMAGE_URL = "headimgurl";
-    private static final String ERRORCODE = "errcode";
-    private static final String ERRORDESC = "errmsg";
+    
+    public String getUserIdFieldName(){
+    	return "openid";
+    }
 
-    @Override
-    public RetBean extract(String response) {
-        String errorCode = extractParameter(response, getJsonRegex(ERRORCODE));
-        if(errorCode != null){
-            String errorDesc = extractParameter(response, getJsonRegex(ERRORDESC));
-            return new RetBean(errorCode, errorDesc, ServiceType.WEIBO);
-        }
+    public String getNickNameFieldName(){
+    	return "nickname";
+    }
 
-        String userId = extractParameter(response, getJsonRegex(USERID));
-        String nickname = extractParameter(response, getJsonRegex(NICKNAME));
-        String headImage = extractParameter(response, getJsonRegex(HEADIMAGE_URL));
+    public String getHeadImageUrlFieldName(){
+    	return "headimgurl";
+    }
 
-        return new RetBean(userId, nickname, headImage, ServiceType.WECHAT);
+    public String getErrorCodeFieldName() {
+        return "errcode";
+    }
+
+    public String getErrorDescFieldName() {
+        return "errmsg";
+    }
+    
+    public ServiceType getServiceType() {
+        return ServiceType.WECHAT;
     }
 }

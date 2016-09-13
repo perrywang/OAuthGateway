@@ -1,49 +1,61 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.IOException;
 
-import com.github.scribejava.core.exceptions.OAuthException;
+import org.thinkinghub.gateway.oauth.bean.RetBean;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
 
-public abstract class BaseResponseExtractor implements ResponseExtractor{
-    private static String COMMON_JSON_REGEX = "\"%s\"\\s*:\\s*\"(\\S*?)\"";
-    private static String COMMON_URLPARAM_REGEX = "\"%s\"\\s*=\\s*\"(\\S*?)\"";
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.scribejava.core.model.Response;
 
-//    public RetBean extract(String response) {
-//    	
-//    	ObjectMapper om = new ObjectMapper();
-//    	om.readTree(response).get(getErrorCodeFieldName());
-//    	
-//    	String ddd = getxxx();
-//    	
-//    	return new RetBean();
-//    }
-//    
-//    public String getErrorCodeFieldName() {
-//    	return "errorCode";
-//    }
-//    
-//    
-//    
-//    String getErrorCode(String response) {
-//    	ObjectMapper om = new ObjectMapper();
-//    	return om.readTree(response).get(getErrorCodeFieldName());
-//    }
+public abstract class BaseResponseExtractor implements ResponseExtractor {
 
-    String getJsonRegex(String name) {
-        return String.format(COMMON_JSON_REGEX, name);
-    }
+	public RetBean extract(Response response) {
+		JsonNode root = null;
+		try {
+			ObjectMapper om = new ObjectMapper();
+			root = om.readTree(response.getBody());
+		} catch (IOException e) {
 
-    String getUrlParamRegex(String name) {
-        return String.format(COMMON_URLPARAM_REGEX, name);
-    }
+		}
+		if (hasError(response)) {
+			String userId = getUserId(response);
+			String nickName = root.get(getNickNameFieldName()).asText();
+			String headImageUrl = root.get(getHeadImageUrlFieldName()).asText();
+			return new RetBean(userId, nickName, headImageUrl, getServiceType());
+		} else {
+			int errorCode = root.get(getErrorCodeFieldName()).asInt();
+			String errorDesc = root.get(getErrorDescFieldName()).asText();
+			return new RetBean(errorCode, errorDesc, getServiceType());
+		}
+	}
 
-    protected static String extractParameter(String response, String regex) throws OAuthException {
-        final Matcher matcher = Pattern.compile(regex).matcher(response);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
+	protected boolean hasError(Response response) {
+		return response.isSuccessful();
+	}
 
-        return null;
-    }
+	abstract ServiceType getServiceType();
+
+	abstract String getUserIdFieldName();
+
+	String getUserId(Response response) {
+		try {
+			ObjectMapper om = new ObjectMapper();
+			JsonNode root = om.readTree(response.getBody());
+			return root.get(getUserIdFieldName()).asText();
+		} catch (IOException e) {
+			throw new GatewayException("can't found openid", e);
+		}
+	}
+
+	abstract String getNickNameFieldName();
+
+	abstract String getHeadImageUrlFieldName();
+
+	abstract String getErrorCodeFieldName();
+
+	abstract String getErrorDescFieldName();
+
 }

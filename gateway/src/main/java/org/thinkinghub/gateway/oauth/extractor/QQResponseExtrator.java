@@ -1,64 +1,58 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
 
-import com.github.scribejava.core.exceptions.OAuthException;
-import com.github.scribejava.core.utils.Preconditions;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.scribejava.core.model.Response;
 
 @Component("QQ")
 public class QQResponseExtrator extends BaseResponseExtractor {
-	private static String OPEN_ID_REGEX = "\"openid\"\\s*:\\s*\"(\\S*?)\"";
-	
-    private final String RET = "ret"; //if ret is not 0, the error code will be stored in it.
-    private final String USERID = "openid";
-    private final String NICKNAME = "nickname";
-    private final String HEADIMAGE_URL = "figureurl";
-    private final String ERRORDESC = "msg";
 
-    @Override
-	public RetBean extract(String response) {
-		String ret = extractParameter(response, getJsonRegex(RET));
-		if (ret == null) {
-			extractOpenId(response);
-			String openId = extractOpenId(response);
-			return new RetBean(openId, null, null, ServiceType.QQ);
-		} else if (!("0").equals(ret)) {
-			String errorDesc = extractParameter(response, getJsonRegex(ERRORDESC));
-			return new RetBean(ret, errorDesc, ServiceType.QQ);
-		} else {
-			String userId = extractParameter(response, getJsonRegex(USERID));
-			String nickname = extractParameter(response, getJsonRegex(NICKNAME));
-			String headImage = extractParameter(response, getJsonRegex(HEADIMAGE_URL));
-			return new RetBean(userId, nickname, headImage, ServiceType.QQ);
-		}
+	public String getUserIdFieldName() {
+		return null;
 	}
-    
-    private String extractOpenId(String response) {
-        Preconditions.checkEmptyString(response,
-                "Response body is incorrect. Can't extract a openId from an empty string");
 
-        final String openId = extractParameter(response, OPEN_ID_REGEX, true);
+	public String getUserId(Response response) {
+		try {
+			ObjectMapper om = new ObjectMapper();
+			JsonNode root = om.readTree(response.getBody());
+			String figureurl = root.get("figureurl").asText();
+			figureurl.matches("[0-9A-Z]{32}");
+			final Matcher matcher = Pattern.compile("[0-9A-Z]{32}").matcher(figureurl);
+			if (matcher.find()) {
+				return matcher.group(0);
+			}
+		} catch (Exception e) {
+			throw new GatewayException("QQ can't extract openid", e);
+		}
+		throw new GatewayException("QQ can't extract openid");
+	}
 
-        return openId;
-    }
-    
-    protected static String extractParameter(String response, String regex, boolean required) throws OAuthException {
-        final Matcher matcher = Pattern.compile(regex).matcher(response);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
+	public String getNickNameFieldName() {
+		return "nickname";
+	}
 
-        if (required) {
-            throw new OAuthException("Response body is incorrect. Can't extract a '" + regex
-                    + "' from this: '" + response + "'", null);
-        }
+	public String getHeadImageUrlFieldName() {
+		return "figureurl";
+	}
 
-        return null;
-    }
+	public String getErrorCodeFieldName() {
+		return "ret";
+	}
+
+	public String getErrorDescFieldName() {
+		return "msg";
+	}
+
+	public ServiceType getServiceType() {
+		return ServiceType.QQ;
+	}
+
+	// public boolean hasError()
 }
