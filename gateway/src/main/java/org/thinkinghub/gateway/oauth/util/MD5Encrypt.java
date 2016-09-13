@@ -1,51 +1,25 @@
 package org.thinkinghub.gateway.oauth.util;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
 
 public class MD5Encrypt {
-	public MD5Encrypt() {
-	}
 
-	/**
-	 * 转换字节数组为16进制字串
-	 * 
-	 * @param b
-	 *            字节数组
-	 * @return 16进制字串
-	 */
-	public static String byteArrayToString(byte[] b) {
-		StringBuffer resultSb = new StringBuffer();
-		for (int i = 0; i < b.length; i++) {
-			// resultSb.append(byteToHexString(b[i]));//若使用本函数转换则可得到加密结果的16进制表示，即数字字母混合的形式
-			resultSb.append(byteToNumString(b[i]));// 使用本函数则返回加密结果的10进制数字字串，即全数字形式
-		}
-		return resultSb.toString();
-	}
-
-	private static String byteToNumString(byte b) {
-
-		int _b = b;
-		if (_b < 0) {
-			_b = 256 + _b;
-		}
-
-		return String.valueOf(_b);
-	}
-
-	public static String MD5Encode(String origin) {
-		String resultString = null;
+	public static String hashing(String str) {
 
 		try {
-			resultString = new String(origin);
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			resultString = byteArrayToString(md.digest(resultString.getBytes()));
-		} catch (Exception ex) {
-
+			md.update(str.getBytes());
+			byte byteData[] = md.digest();
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+			return sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			throw new GatewayException("Error occurred while using MD5 hashing.", e);
 		}
-		return resultString;
-	}
-	public static void main(String[] args){
-		String str = "eyJuaWNrbmFtZSI6Inp5eWV0dGllIiwiaGVhZEltYWdlIjoiaHR0cDovL3R2YTMuc2luYWltZy5j%20%20bi9jcm9wLjcuNy4xMTIuMTEyLjUwLzU0MmVlMDZmancxZXg2dHFxbHdvN2oyMDNjMDNjZ2xsLmpw%20%20ZyIsInNlcnZpY2UiOiJXRUlCTyIsInJldHVybl9jb2RlIjowLCJ1aWQiOiIxNDEyMzU4MjU1Iiwi%20%20ZXJyb3JfY29kZSI6MH0=";
-		System.out.println(MD5Encode(str));
 	}
 }

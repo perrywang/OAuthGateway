@@ -125,6 +125,6 @@ public class GatewayController {
 	}
 
 	private String getMD5Signature(String str) {
-		return MD5Encrypt.MD5Encode(str);
+		return MD5Encrypt.hashing(str);
 	}
 }
