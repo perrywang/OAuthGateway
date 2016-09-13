@@ -1,7 +1,6 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
 import org.springframework.stereotype.Component;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 @Component("Weixin")

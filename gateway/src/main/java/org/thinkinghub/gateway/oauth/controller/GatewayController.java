@@ -1,5 +1,11 @@
 package org.thinkinghub.gateway.oauth.controller;
 
+import java.io.IOException;
+import java.util.Base64;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
@@ -11,22 +17,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
-import org.thinkinghub.gateway.oauth.entity.*;
+import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
+import org.thinkinghub.gateway.oauth.entity.ErrorType;
+import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.helper.JsonHelper;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
-import org.thinkinghub.gateway.oauth.service.*;
+import org.thinkinghub.gateway.oauth.service.QQService;
+import org.thinkinghub.gateway.oauth.service.QueueService;
+import org.thinkinghub.gateway.oauth.service.ResultHandlingService;
+import org.thinkinghub.gateway.oauth.service.WeiboService;
+import org.thinkinghub.gateway.oauth.service.WeixinService;
 import org.thinkinghub.gateway.util.IDGenerator;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class GatewayController {
@@ -112,7 +122,7 @@ public class GatewayController {
 
     @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
     public ResponseEntity<String> requestWeiboAccessToken(HttpServletRequest request, @RequestParam("code") String code,
-                                                          @RequestParam("state") String state) {
+                                                          @RequestParam("state") String state) throws JsonProcessingException {
 
         GatewayAccessToken token = weiboService.getResult(state, code);
         eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, token));
@@ -186,14 +196,9 @@ public class GatewayController {
         });
     }
 
-    private String handleResult(RetBean bean) {
-        String retJson = JsonHelper.toJson(bean);
-        byte[] retJsonBytes;
-        try {
-            retJsonBytes = retJson.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new GatewayException("exception happens when converting string to bytes");
-        }
-        return new sun.misc.BASE64Encoder().encode(retJsonBytes);
+    private String handleResult(RetBean bean) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        byte[] retJsonBytes = om.writeValueAsBytes(bean);
+        return Base64.getEncoder().encodeToString(retJsonBytes);
     }
 }
