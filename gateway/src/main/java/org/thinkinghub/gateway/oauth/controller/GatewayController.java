@@ -22,6 +22,7 @@ import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
+import org.thinkinghub.gateway.oauth.queue.AuthHistoryQueueTask;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
@@ -120,7 +121,7 @@ public class GatewayController {
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 
         //TODO here needs to add all required data in ah
-        queueService.put(new QueuableTask(){
+        queueService.put(new AuthHistoryQueueTask(ah){
             @Override
             public void execute() {
                 authenticationHistoryRepository.save(ah);

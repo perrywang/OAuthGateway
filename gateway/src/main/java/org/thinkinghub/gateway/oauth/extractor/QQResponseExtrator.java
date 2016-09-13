@@ -33,23 +33,23 @@ public class QQResponseExtrator extends BaseResponseExtractor {
     }
 
     @Override
-    Enum getServiceType() {
+    ServiceType getServiceType() {
         return ServiceType.QQ;
     }
 
     @Override
     public RetBean extract(String response) {
-        String ret = extractParameter(response, getJsonRegex(getErrorCode()));
+        String ret = extractParameter(response, getUrlParamRegex(getErrorCode()));
         //if ret is not 0, the error code will be stored in it.
         if(!("0").equals(ret)){
-            String errorDesc = extractParameter(response, getJsonRegex(getErrorDesc()));
-            return new RetBean(ret, errorDesc, ServiceType.QQ);
+            String errorDesc = extractParameter(response, getUrlParamRegex(getErrorDesc()));
+            return new RetBean(ret, errorDesc, getServiceType());
         }
 
-        String userId = extractParameter(response, getJsonRegex(getUserId()));
-        String nickname = extractParameter(response, getJsonRegex(getNickname()));
-        String headImage = extractParameter(response, getJsonRegex(getHeadImageUrl()));
+        String userId = extractParameter(response, getUrlParamRegex(getUserId()));
+        String nickname = extractParameter(response, getUrlParamRegex(getNickname()));
+        String headImage = extractParameter(response, getUrlParamRegex(getHeadImageUrl()));
 
-        return new RetBean(userId, nickname, headImage, ServiceType.QQ);
+        return new RetBean(userId, nickname, headImage, getServiceType());
     }
 }

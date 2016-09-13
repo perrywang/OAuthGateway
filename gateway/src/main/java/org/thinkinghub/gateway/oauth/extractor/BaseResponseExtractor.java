@@ -21,7 +21,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 
     abstract String getErrorDesc();
 
-    abstract Enum getServiceType();
+    abstract ServiceType getServiceType();
 
     String getJsonRegex(String name) {
         return String.format(COMMON_JSON_REGEX, name);
@@ -42,7 +42,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
         String nickname = extractParameter(response, getJsonRegex(getNickname()));
         String headImage = extractParameter(response, getJsonRegex(getHeadImageUrl()));
 
-        return new RetBean(userId, nickname, headImage, ServiceType.WECHAT);
+        return new RetBean(userId, nickname, headImage, getServiceType());
     }
 
     protected static String extractParameter(String response, String regex) throws OAuthException {
