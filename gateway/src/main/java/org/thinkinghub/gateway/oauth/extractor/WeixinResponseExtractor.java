@@ -32,7 +32,7 @@ public class WeixinResponseExtractor extends BaseResponseExtractor {
     }
 
     @Override
-    Enum getServiceType() {
+    ServiceType getServiceType() {
         return ServiceType.WECHAT;
     }
 }

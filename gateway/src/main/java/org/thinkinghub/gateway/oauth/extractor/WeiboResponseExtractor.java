@@ -32,7 +32,7 @@ public class WeiboResponseExtractor extends BaseResponseExtractor {
     }
 
     @Override
-    Enum getServiceType() {
+    ServiceType getServiceType() {
         return ServiceType.WEIBO;
     }
 }
