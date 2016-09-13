@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.assertj.core.util.Strings;
-
 public class QueueProcessor {
     
     private String queueName;
@@ -13,7 +11,7 @@ public class QueueProcessor {
     private ExecutorService workerPool;
         
     public QueueProcessor(String queueName, int workerNum) {
-        assert !Strings.isNullOrEmpty(queueName);
+        assert queueName != null && queueName.length() > 0;
         assert workerNum > 0;
         this.queueName = queueName;
         this.workerPool = Executors.newFixedThreadPool(workerNum, new ThreadFactory() {
