@@ -27,52 +27,54 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class WeixinService extends AbstractOAuthService implements OAuthService{
+public class WeixinService extends AbstractOAuthService {
 	private final String GET_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo";
-	
-    @Autowired
-    private WeixinConfiguration weixinConfig;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+	@Autowired
+	private WeixinConfiguration weixinConfig;
 
-    @Autowired
-    ResultHandlingService resultHandlingService;
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 
-    @PostConstruct
-    public void initilize() {
-        log.info(weixinConfig.toString());
-    }
+	@Autowired
+	ResultHandlingService resultHandlingService;
 
-    protected OAuth20Service getOAuthService(String state) {
-        OAuth20Service service = new ServiceBuilder().apiKey(weixinConfig.getApiKey())
-                .apiSecret(weixinConfig.getApiSecret()).callback(OAuthEncoder.encode(weixinConfig.getCallback()))
-                .scope(weixinConfig.getScope()).state(state).build(WeixinApi.instance());
-        return service;
-    }
+	@PostConstruct
+	public void initilize() {
+		log.info(weixinConfig.toString());
+	}
 
-    @Override
-    public String getAuthorizationUrl(String state) {
-        Map<String, String> additionalParams = new HashMap<>();
-        additionalParams.put("response_type", weixinConfig.getResponseType());
-        final String authorizationUrl = getOAuthService(state).getAuthorizationUrl(additionalParams);
+	protected OAuth20Service getOAuthService(String state) {
+		OAuth20Service service = new ServiceBuilder().apiKey(weixinConfig.getApiKey())
+				.apiSecret(weixinConfig.getApiSecret()).callback(OAuthEncoder.encode(weixinConfig.getCallback()))
+				.scope(weixinConfig.getScope()).state(state).build(WeixinApi.instance());
+		return service;
+	}
 
-        return authorizationUrl;
-    }
-    @Override
+	@Override
+	public String getAuthorizationUrl(String state) {
+		Map<String, String> additionalParams = new HashMap<>();
+		additionalParams.put("response_type", weixinConfig.getResponseType());
+		final String authorizationUrl = getOAuthService(state).getAuthorizationUrl(additionalParams);
+
+		return authorizationUrl;
+	}
+
+	@Override
 	public String getUserInfo(String state, String code) {
 		OAuth20Service service = getOAuthService(state);
 		GatewayAccessToken accessToken = getAccessToken(state, code);
 		eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 		// send request to get user info
-		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(),service);
+		final OAuthRequest request = new OAuthRequest(Verb.GET,
+				GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(), service);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
-		String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
+		String retJson = resultHandlingService.getRetJson(response, ServiceType.WECHAT);
 		return Base64Encoder.encode(retJson);
 	}
-    
-	public RetBean getRetBean(){
+
+	public RetBean getRetBean() {
 		return new RetBean();
 	}
 }

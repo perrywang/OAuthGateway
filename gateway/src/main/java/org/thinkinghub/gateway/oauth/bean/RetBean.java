@@ -50,4 +50,14 @@ public class RetBean {
         this.service = service;
         this.rawResponse = rawResponse;
     }
+    
+    @Override
+    public String toString(){
+    	return "{\"retCode\":"+ retCode 
+    			+","+"\"userId\":" + userId
+    			+","+"\"nickname\":" + nickname
+    			+","+"\"headImage\":" + headImage
+    			+","+"\"service\":" + service
+    			+"}";
+    }
 }

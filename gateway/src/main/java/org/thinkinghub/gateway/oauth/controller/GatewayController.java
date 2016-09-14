@@ -77,7 +77,7 @@ public class GatewayController {
     public void requestWeiboAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestParam("code") String code,
             @RequestParam("state") String state) {
     	AbstractOAuthService weiboService = ServiceRegistry.instance().getService(ServiceType.WEIBO);
-    	String resultStr = weiboService.getUserInfo(state, code);
+    	String userInfo = weiboService.getUserInfo(state, code);
     	AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 
         //TODO here needs to add all required data in ah
@@ -88,39 +88,39 @@ public class GatewayController {
 //            }
 //        });
 		String custCallbackUrl = ah.getCallback();
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + resultStr + "&md5signature="
-				+ getMD5Signature(resultStr);
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + userInfo + "&md5signature="
+				+ getMD5Signature(userInfo);
 		redirect(response, redirectUrl);
     }
 
 	@RequestMapping(value = "/oauth/qq", method = RequestMethod.GET)
 	public void requestQQAccessToken(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value = "code", required = true) String code,
-			@RequestParam(value = "state", required = true) String state) {
+			@RequestParam(value = "code", required = true) String code, @RequestParam(value = "state", required = true) String state) {
 		AbstractOAuthService oauthService = ServiceRegistry.instance().getService(ServiceType.QQ);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 		
 		String custCallbackUrl = ah.getCallback();
-		String resultStr = oauthService.getUserInfo(state, code);
+		String userInfo = oauthService.getUserInfo(state, code);
 		ah.setServiceStatus(ServiceStatus.SUCCESS);
 		// Save the ServiceStatus to "SUCCESS"
 		authenticationHistoryRepository.save(ah);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + resultStr + "&md5signature="
-				+ getMD5Signature(resultStr);
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + userInfo + "&md5signature="
+				+ getMD5Signature(userInfo);
 		redirect(response, redirectUrl);
 	}
 
 	@RequestMapping(value = "/oauth/wechat", method = RequestMethod.GET)
 	public void requestWeixinAccessToken(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("code") String code, @RequestParam("state") String state) {
+			@RequestParam(value = "code", required = true) String code, @RequestParam(value = "state", required = true) String state) {
 		AbstractOAuthService oauthService = ServiceRegistry.instance().getService(ServiceType.WECHAT);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 		String custCallbackUrl = ah.getCallback();
-		String token = oauthService.getUserInfo(state, code);
+		String userInfo = oauthService.getUserInfo(state, code);
 		ah.setServiceStatus(ServiceStatus.SUCCESS);
 		// Save the ServiceStatus to "SUCCESS"
 		authenticationHistoryRepository.save(ah);
-		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?uid=" + token;
+		String redirectUrl = request.getScheme() + "://" + custCallbackUrl + "?userInfo=" + userInfo + "&md5signature="
+				+ getMD5Signature(userInfo);
 		redirect(response, redirectUrl);
 	}
 	
