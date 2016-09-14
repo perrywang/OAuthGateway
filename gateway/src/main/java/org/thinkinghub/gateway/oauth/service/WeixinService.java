@@ -27,9 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class WeixinService extends AbstractOAuthService implements OAuthService{
-	private final String GET_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo";
-	
+public class WeixinService extends AbstractOAuthService implements OAuthService {
+    private final String GET_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo";
+
     @Autowired
     private WeixinConfiguration weixinConfig;
 
@@ -59,20 +59,21 @@ public class WeixinService extends AbstractOAuthService implements OAuthService{
 
         return authorizationUrl;
     }
+
     @Override
-	public String getUserInfo(String state, String code) {
-		OAuth20Service service = getOAuthService(state);
-		GatewayAccessToken accessToken = getAccessToken(state, code);
-		eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
-		// send request to get user info
-		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(),service);
-		service.signRequest(accessToken, request);
-		Response response = request.send();
-		String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
-		return Base64Encoder.encode(retJson);
-	}
-    
-	public RetBean getRetBean(){
-		return new RetBean();
-	}
+    public Response getResponse(String state, String code) {
+        OAuth20Service service = getOAuthService(state);
+        GatewayAccessToken accessToken = getAccessToken(state, code);
+        eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
+        // send request to get user info
+        final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(), service);
+        service.signRequest(accessToken, request);
+        Response response = request.send();
+
+        return response;
+    }
+
+    public RetBean getRetBean() {
+        return new RetBean();
+    }
 }

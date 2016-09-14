@@ -30,9 +30,6 @@ public class WeiboService extends AbstractOAuthService {
 	private WeiboConfiguration weiboConfig;
 
 	@Autowired
-	private ResultHandlingService resultHandlingService;
-
-	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
 	public WeiboService() {
@@ -50,7 +47,8 @@ public class WeiboService extends AbstractOAuthService {
 		return service;
 	}
 
-	public String getUserInfo(String state, String code) {
+	@Override
+	public Response getResponse(String state, String code) {
 		OAuth20Service service = getOAuthService(state);
 		GatewayAccessToken accessToken = getAccessToken(state, code);
 		eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
@@ -58,8 +56,9 @@ public class WeiboService extends AbstractOAuthService {
 		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?uid=" + accessToken.getUserId(),service);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
-		String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
-		return Base64Encoder.encode(retJson);
+		return response;
+		//String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
+		//return Base64Encoder.encode(retJson);
 	}
 
 	public RetBean getRetBean() {

@@ -28,17 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class QQService extends AbstractOAuthService{
-	
-	private final String GET_OPEN_ID_URL = "https://graph.qq.com/oauth2.0/me";
-	private final String GET_USER_INFO_URL = "https://graph.qq.com/user/get_user_info";
-	
+public class QQService extends AbstractOAuthService {
+
+    private final String GET_OPEN_ID_URL = "https://graph.qq.com/oauth2.0/me";
+    private final String GET_USER_INFO_URL = "https://graph.qq.com/user/get_user_info";
+
     @Autowired
     private ApplicationEventPublisher eventPublisher;
-    
+
     @Autowired
     private QQConfiguration qqConfig;
-    
+
     @Autowired
     ResultHandlingService resultHandlingService;
 
@@ -46,50 +46,51 @@ public class QQService extends AbstractOAuthService{
     public void initilize() {
         log.info(qqConfig.toString());
     }
-    
+
     protected OAuth20Service getOAuthService(String state) {
         OAuth20Service service = new ServiceBuilder().apiKey(qqConfig.getApiKey()).apiSecret(qqConfig.getApiSecret())
                 .callback(qqConfig.getCallback()).state(state).build(QQApi.instance());
         return service;
     }
 
-	public String getOpenId(OAuth2AccessToken accessToken, OAuth20Service service) {
-		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_OPEN_ID_URL, service);
-		service.signRequest(accessToken, request);
-		Response response = request.send();
-		String rawResponse = null;
-		try {
-			rawResponse = response.getBody();
-		} catch (IOException e) {
+    public String getOpenId(OAuth2AccessToken accessToken, OAuth20Service service) {
+        final OAuthRequest request = new OAuthRequest(Verb.GET, GET_OPEN_ID_URL, service);
+        service.signRequest(accessToken, request);
+        Response response = request.send();
+        String rawResponse = null;
+        try {
+            rawResponse = response.getBody();
+        } catch (IOException e) {
 
-		}
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			String formattedStr = rawResponse.substring(rawResponse.indexOf("{"), rawResponse.indexOf("}")+1);
-			JsonNode node = objectMapper.readTree(formattedStr);
-			return node.get("openid").asText();
-		} catch (IOException e) {
-			throw new GatewayException("Converting OpenId response encountered error");
-		}
-	}
-	
-	@Override
-    public String getUserInfo(String state, String code) {
-            OAuth20Service service = getOAuthService(state);
-        	OAuth2AccessToken accessToken = getAccessToken(state, code);
-            String openId = getOpenId(accessToken, service);
-            eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
-            // send request to get user info
-            final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL+"?oauth_consumer_key="+qqConfig.getApiKey()+"&openid="+openId, service);
-            service.signRequest(accessToken, request);
-            Response response = request.send();
-            String retJson = resultHandlingService.getRetJson(response, ServiceType.QQ);
-            return Base64Encoder.encode(retJson);
-
+        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String formattedStr = rawResponse.substring(rawResponse.indexOf("{"), rawResponse.indexOf("}") + 1);
+            JsonNode node = objectMapper.readTree(formattedStr);
+            return node.get("openid").asText();
+        } catch (IOException e) {
+            throw new GatewayException("Converting OpenId response encountered error");
+        }
     }
-	
-	public RetBean getRetBean(){
-		return new RetBean();
-	}
-	
+
+    @Override
+    public Response getResponse(String state, String code) {
+        OAuth20Service service = getOAuthService(state);
+        OAuth2AccessToken accessToken = getAccessToken(state, code);
+
+        String openId = getOpenId(accessToken, service);
+        eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
+
+        // send request to get user info
+        final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?oauth_consumer_key=" + qqConfig.getApiKey() + "&openid=" + openId, service);
+        service.signRequest(accessToken, request);
+        Response response = request.send();
+
+        return response;
+    }
+
+    public RetBean getRetBean() {
+        return new RetBean();
+    }
+
 }

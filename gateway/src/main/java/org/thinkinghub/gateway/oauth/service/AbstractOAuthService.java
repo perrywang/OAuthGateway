@@ -2,6 +2,7 @@ package org.thinkinghub.gateway.oauth.service;
 
 import java.io.IOException;
 
+import com.github.scribejava.core.model.Response;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -27,5 +28,5 @@ public abstract class AbstractOAuthService implements OAuthService{
 		return accessToken;
 	}
 	
-	public abstract String getUserInfo(String state, String code);
+	public abstract Response getResponse(String state, String code);
 }
