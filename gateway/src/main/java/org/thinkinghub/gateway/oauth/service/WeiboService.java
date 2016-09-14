@@ -9,9 +9,7 @@ import org.thinkinghub.gateway.api.WeiboApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.config.WeiboConfiguration;
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -40,7 +38,7 @@ public class WeiboService extends AbstractOAuthService {
 		log.info(weiboConfig.toString());
 	}
 
-	public OAuth20Service getOAuthService(String state) {
+	protected OAuth20Service getOAuthService(String state) {
 		OAuth20Service service = new ServiceBuilder().apiKey(weiboConfig.getApiKey())
 				.apiSecret(weiboConfig.getApiSecret()).callback(weiboConfig.getCallback()).state(state)
 				.build(WeiboApi.instance());
@@ -57,8 +55,6 @@ public class WeiboService extends AbstractOAuthService {
 		service.signRequest(accessToken, request);
 		Response response = request.send();
 		return response;
-		//String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
-		//return Base64Encoder.encode(retJson);
 	}
 
 	public RetBean getRetBean() {
