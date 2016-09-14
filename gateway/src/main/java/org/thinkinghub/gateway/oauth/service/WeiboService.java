@@ -9,9 +9,7 @@ import org.thinkinghub.gateway.api.WeiboApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.config.WeiboConfiguration;
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -30,9 +28,6 @@ public class WeiboService extends AbstractOAuthService {
 	private WeiboConfiguration weiboConfig;
 
 	@Autowired
-	private ResultHandlingService resultHandlingService;
-
-	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
 	public WeiboService() {
@@ -43,14 +38,15 @@ public class WeiboService extends AbstractOAuthService {
 		log.info(weiboConfig.toString());
 	}
 
-	public OAuth20Service getOAuthService(String state) {
+	protected OAuth20Service getOAuthService(String state) {
 		OAuth20Service service = new ServiceBuilder().apiKey(weiboConfig.getApiKey())
 				.apiSecret(weiboConfig.getApiSecret()).callback(weiboConfig.getCallback()).state(state)
 				.build(WeiboApi.instance());
 		return service;
 	}
 
-	public String getUserInfo(String state, String code) {
+	@Override
+	public Response getResponse(String state, String code) {
 		OAuth20Service service = getOAuthService(state);
 		GatewayAccessToken accessToken = getAccessToken(state, code);
 		eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
@@ -58,8 +54,7 @@ public class WeiboService extends AbstractOAuthService {
 		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?uid=" + accessToken.getUserId(),service);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
-		String retJson = resultHandlingService.getRetJson(response, ServiceType.WEIBO);
-		return Base64Encoder.encode(retJson);
+		return response;
 	}
 
 	public RetBean getRetBean() {

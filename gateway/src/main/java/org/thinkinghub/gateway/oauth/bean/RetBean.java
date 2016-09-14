@@ -26,7 +26,7 @@ public class RetBean {
     private ServiceType service;
 
     @JsonProperty("error_code")
-    private int errorCode;
+    private String errorCode;
 
     @JsonProperty("error_desc")
     private String errorDesc;
@@ -34,7 +34,7 @@ public class RetBean {
     @JsonIgnore
     private String rawResponse;
 
-    public RetBean(int errorCode, String errorDesc, ServiceType service, String rawResponse) {
+    public RetBean(String errorCode, String errorDesc, ServiceType service, String rawResponse) {
         this.retCode = 1;
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;

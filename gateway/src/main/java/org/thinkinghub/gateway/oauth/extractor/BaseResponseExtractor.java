@@ -1,29 +1,25 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import java.io.IOException;
-
+import com.github.scribejava.core.model.Response;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.helper.JsonHelper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.model.Response;
+import java.io.IOException;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
 	public RetBean extract(Response response) {
-		JsonNode root = null;
 		try {
-			ObjectMapper om = new ObjectMapper();
-			root = om.readTree(response.getBody());
+			String jsonBody = response.getBody();
 			if (hasError(response)) {
 				String userId = getUserId(response);
-				String nickName = root.get(getNickNameFieldName()).asText();
-				String headImageUrl = root.get(getHeadImageUrlFieldName()).asText();
+				String nickName = JsonHelper.getValue(jsonBody, getNickNameFieldName());
+				String headImageUrl = JsonHelper.getValue(jsonBody, getHeadImageUrlFieldName());
 				return new RetBean(userId, nickName, headImageUrl, getServiceType(), response.getBody());
 			} else {
-				int errorCode = root.get(getErrorCodeFieldName()).asInt();
-				String errorDesc = root.get(getErrorDescFieldName()).asText();
+				String errorCode = JsonHelper.getValue(jsonBody, getErrorCodeFieldName());
+				String errorDesc = JsonHelper.getValue(jsonBody, getErrorDescFieldName());
 				return new RetBean(errorCode, errorDesc, getServiceType(), response.getBody());
 			}
 		} catch (IOException e) {
@@ -41,9 +37,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 
 	String getUserId(Response response) {
 		try {
-			ObjectMapper om = new ObjectMapper();
-			JsonNode root = om.readTree(response.getBody());
-			return root.get(getUserIdFieldName()).asText();
+			return JsonHelper.getValue(response.getBody(), getUserIdFieldName());
 		} catch (IOException e) {
 			throw new GatewayException("can't found openid", e);
 		}

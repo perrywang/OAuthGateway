@@ -12,9 +12,7 @@ import org.thinkinghub.gateway.api.WeixinApi;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.config.WeixinConfiguration;
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -36,9 +34,6 @@ public class WeixinService extends AbstractOAuthService {
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
-	@Autowired
-	ResultHandlingService resultHandlingService;
-
 	@PostConstruct
 	public void initilize() {
 		log.info(weixinConfig.toString());
@@ -56,22 +51,19 @@ public class WeixinService extends AbstractOAuthService {
 		Map<String, String> additionalParams = new HashMap<>();
 		additionalParams.put("response_type", weixinConfig.getResponseType());
 		final String authorizationUrl = getOAuthService(state).getAuthorizationUrl(additionalParams);
-
 		return authorizationUrl;
 	}
 
 	@Override
-	public String getUserInfo(String state, String code) {
+	public Response getResponse(String state, String code) {
 		OAuth20Service service = getOAuthService(state);
 		GatewayAccessToken accessToken = getAccessToken(state, code);
 		eventPublisher.publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 		// send request to get user info
-		final OAuthRequest request = new OAuthRequest(Verb.GET,
-				GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(), service);
+		final OAuthRequest request = new OAuthRequest(Verb.GET, GET_USER_INFO_URL + "?openid=" + accessToken.getUserId(), service);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
-		String retJson = resultHandlingService.getRetJson(response, ServiceType.WECHAT);
-		return Base64Encoder.encode(retJson);
+		return response;
 	}
 
 	public RetBean getRetBean() {
