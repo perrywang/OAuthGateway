@@ -1,5 +1,5 @@
 package org.thinkinghub.gateway.oauth.entity;
 
 public enum ServiceType {
-    WECHAT, QQ, WEIBO
+    WECHAT, QQ, WEIBO, GITHUB
 }

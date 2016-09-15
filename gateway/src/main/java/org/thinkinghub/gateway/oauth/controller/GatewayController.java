@@ -105,6 +105,16 @@ public class GatewayController {
         redirect(response, redirectUrl);
     }
 
+    @RequestMapping(value = "/oauth/github", method = RequestMethod.GET)
+    public void requestGitHubAccessToken(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestParam("code") String code, @RequestParam("state") String state) {
+        AbstractOAuthService gitHubService = ServiceRegistry.instance().getService(ServiceType.GITHUB);
+        Response userInfoResponse = gitHubService.getResponse(state, code);
+        String redirectUrl = handleResponse(request, userInfoResponse, ServiceType.GITHUB, state);
+
+        redirect(response, redirectUrl);
+    }
+
     public void redirect(HttpServletResponse response, String redirectUrl) {
         try {
             response.sendRedirect(redirectUrl);

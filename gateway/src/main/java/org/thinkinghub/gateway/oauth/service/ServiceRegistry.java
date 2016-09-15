@@ -8,36 +8,41 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 @Service
 public class ServiceRegistry {
-	private static ServiceRegistry self;
+    private static ServiceRegistry self;
 
-	@Autowired
-	WeiboService weiboService;
+    @Autowired
+    WeiboService weiboService;
 
-	@Autowired
-	QQService qqService;
+    @Autowired
+    QQService qqService;
 
-	@Autowired
-	WeixinService weixinService;
+    @Autowired
+    WeixinService weixinService;
 
-	@PostConstruct
-	public void init() {
-		self = this;
-	}
+    @Autowired
+    GitHubService gitHubService;
 
-	public static ServiceRegistry instance() {
-		return self;
-	}
+    @PostConstruct
+    public void init() {
+        self = this;
+    }
 
-	public AbstractOAuthService getService(ServiceType service) {
-		switch (service) {
-		case WEIBO:
-			return weiboService;
-		case QQ:
-			return qqService;
-		case WECHAT:
-			return weixinService;
-		default:
-			return null;
-		}
-	}
+    public static ServiceRegistry instance() {
+        return self;
+    }
+
+    public AbstractOAuthService getService(ServiceType service) {
+        switch (service) {
+            case WEIBO:
+                return weiboService;
+            case QQ:
+                return qqService;
+            case WECHAT:
+                return weixinService;
+            case GITHUB:
+                return gitHubService;
+            default:
+                return null;
+        }
+    }
 }
