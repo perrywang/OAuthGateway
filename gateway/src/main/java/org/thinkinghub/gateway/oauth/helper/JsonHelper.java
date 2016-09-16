@@ -26,14 +26,14 @@ public class JsonHelper {
      */
     public static String getValue(String json, String name) {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
+        JsonNode rootNode;
         try {
             rootNode = mapper.readTree(json);
         } catch (IOException e) {
             throw new org.thinkinghub.gateway.oauth.exception.JsonProcessingException("Exception is thrown when getting "
                     + name + " from " + json, e);
         }
-        return rootNode.path(name).textValue();
+        return rootNode.get(name).asText();
     }
 
 }

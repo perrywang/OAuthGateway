@@ -12,7 +12,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 	public RetBean extract(Response response) {
 		try {
 			String jsonBody = response.getBody();
-			if (hasError(response)) {
+			if (isSuccessful(response)) {
 				String userId = getUserId(response);
 				String nickName = JsonHelper.getValue(jsonBody, getNickNameFieldName());
 				String headImageUrl = JsonHelper.getValue(jsonBody, getHeadImageUrlFieldName());
@@ -27,7 +27,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 		}
 	}
 
-	protected boolean hasError(Response response) {
+	protected boolean isSuccessful(Response response) {
 		return response.isSuccessful();
 	}
 
