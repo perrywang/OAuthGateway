@@ -10,26 +10,27 @@ public class GitHubResponseExtractor extends BaseResponseExtractor {
 
     @Override
     String getUserIdFieldName() {
-        return null;
+        return "id";
     }
 
     @Override
     String getNickNameFieldName() {
-        return null;
+        return "name";
     }
 
     @Override
     String getHeadImageUrlFieldName() {
-        return null;
+        return "avatar_url";
     }
 
     @Override
     String getErrorCodeFieldName() {
+        //there is no error code return
         return null;
     }
 
     @Override
     String getErrorDescFieldName() {
-        return null;
+        return "message";
     }
 }
