@@ -1,10 +1,11 @@
-package org.thinkinghub.gateway.oauth.service;
+package org.thinkinghub.gateway.oauth.registry;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.service.*;
 
 @Service
 public class ServiceRegistry {

@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.oauth.helper;
+package org.thinkinghub.gateway.oauth.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class JsonHelper {
+public class JsonUtil {
     public static String toJson(Object obj) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {

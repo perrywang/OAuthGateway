@@ -7,11 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@Data
 @Configuration
-@ConfigurationProperties(prefix = "qq")
-public class QQConfiguration {
-    private String apiKey;
-    private String apiSecret;
-    private String callback;
+@ConfigurationProperties(prefix = "weibo")
+public class WeiboConfig extends GatewayOAuthConfig {
 }

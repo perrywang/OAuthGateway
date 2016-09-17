@@ -12,14 +12,14 @@ import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.*;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.helper.JsonHelper;
+import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.AbstractOAuthService;
 import org.thinkinghub.gateway.oauth.service.QueueService;
 import org.thinkinghub.gateway.oauth.service.ResultHandlingService;
-import org.thinkinghub.gateway.oauth.service.ServiceRegistry;
+import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 import org.thinkinghub.gateway.util.IDGenerator;
@@ -135,7 +135,7 @@ public class GatewayController {
             //but succeed this time.
         }
 
-        String resultStr = Base64Encoder.encode(JsonHelper.toJson(retBean));
+        String resultStr = Base64Encoder.encode(JsonUtil.toJson(retBean));
         String redirectUrl = request.getScheme() + "://" + ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
                 + getMD5Signature(resultStr);
 
