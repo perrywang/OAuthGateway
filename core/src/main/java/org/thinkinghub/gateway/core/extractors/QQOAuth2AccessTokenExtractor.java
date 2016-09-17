@@ -7,6 +7,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import org.thinkinghub.gateway.util.RegexUtil;
 
 public class QQOAuth2AccessTokenExtractor extends OAuth2AccessTokenExtractor {
+    //TODO
     private final String ERRORCODE_REGEX = "\"code\"\\s*=\\s*\"(\\S*?)\"";
     private final String ERRORDESC_REGEX = "\"msg\"\\s*=\\s*\"(\\S*?)\"";
 
