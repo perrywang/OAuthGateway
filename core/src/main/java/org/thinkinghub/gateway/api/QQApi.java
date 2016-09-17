@@ -1,6 +1,6 @@
 package org.thinkinghub.gateway.api;
 
-import org.thinkinghub.gateway.core.extractors.QQOAuth2AccessTokenJsonExtractor;
+import org.thinkinghub.gateway.core.extractors.QQOAuth2AccessTokenExtractor;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
@@ -30,7 +30,7 @@ public class QQApi extends DefaultApi20 {
 
     @Override
     public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
-        return QQOAuth2AccessTokenJsonExtractor.instance();
+        return QQOAuth2AccessTokenExtractor.instance();
     }
 
 }

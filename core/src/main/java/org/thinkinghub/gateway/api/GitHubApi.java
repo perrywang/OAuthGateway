@@ -3,7 +3,7 @@ package org.thinkinghub.gateway.api;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import org.thinkinghub.gateway.core.extractors.GitHubOAuth2AccessTokenJsonExtractor;
+import org.thinkinghub.gateway.core.extractors.GitHubOAuth2AccessTokenExtractor;
 
 public class GitHubApi extends DefaultApi20{
     @Override
@@ -26,6 +26,6 @@ public class GitHubApi extends DefaultApi20{
 
     @Override
     public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
-        return GitHubOAuth2AccessTokenJsonExtractor.instance();
+        return GitHubOAuth2AccessTokenExtractor.instance();
     }
 }
