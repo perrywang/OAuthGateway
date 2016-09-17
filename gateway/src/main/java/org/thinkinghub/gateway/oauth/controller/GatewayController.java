@@ -1,7 +1,10 @@
 package org.thinkinghub.gateway.oauth.controller;
 
-import com.github.scribejava.core.model.Response;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,24 +12,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
-import org.thinkinghub.gateway.oauth.entity.*;
+import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
+import org.thinkinghub.gateway.oauth.entity.ErrorType;
+import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
+import org.thinkinghub.gateway.oauth.registry.LocaleMessageSourceRegistry;
+import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.AbstractOAuthService;
 import org.thinkinghub.gateway.oauth.service.QueueService;
 import org.thinkinghub.gateway.oauth.service.ResultHandlingService;
-import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.util.Base64Encoder;
+import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 import org.thinkinghub.gateway.util.IDGenerator;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.github.scribejava.core.model.Response;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -46,12 +55,23 @@ public class GatewayController {
 
     @Autowired
     private ResultHandlingService resultHandlingService;
-
+    private void checkRequestParam(String key, String callbackUrl, ServiceType service){
+    	if (key == null){
+    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000001"));
+    	}
+    	if (callbackUrl == null){
+    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000002"));
+    	}
+    	if (service == null){
+    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000003"));
+    	}
+    }
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
-    public void route(@RequestParam(value = "callbackUrl", required = true) String callbackUrl,
-                      @RequestParam(value = "key", required = true) String key,
-                      @RequestParam(value = "service", required = true) ServiceType service, HttpServletResponse response,
+    public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
+                      @RequestParam(value = "key", required = false) String key,
+                      @RequestParam(value = "service", required = false) ServiceType service, HttpServletResponse response,
                       HttpServletRequest request) {
+    	checkRequestParam(key, callbackUrl, service);
         User user = userRepository.findByKey(key);
         if (user != null) {
             String state = Long.toString(IDGenerator.nextId());
@@ -69,8 +89,8 @@ public class GatewayController {
         try {
             response.sendRedirect(returnURL);
         } catch (IOException e) {
-            //TODO
             e.printStackTrace();
+        	throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000004"));
         }
     }
 
