@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.Response;
 
 @Component("QQ")
-public class QQResponseExtrator extends BaseResponseExtractor {
+public class QQResponseExtractor extends BaseResponseExtractor {
 	public String getUserIdFieldName() {
 		return null;
 	}
