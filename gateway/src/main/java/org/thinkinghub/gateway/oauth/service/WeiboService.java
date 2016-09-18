@@ -13,8 +13,6 @@ import javax.annotation.PostConstruct;
 @Service
 @Slf4j
 public class WeiboService extends AbstractOAuthService {
-    private final String GET_USER_INFO_URL = "https://api.weibo.com/2/users/show.json";
-
     @Autowired
     private WeiboConfig weiboConfig;
 

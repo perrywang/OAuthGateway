@@ -115,6 +115,16 @@ public class GatewayController {
         redirect(response, redirectUrl);
     }
 
+    @RequestMapping(value = "/oauth/facebook", method = RequestMethod.GET)
+    public void requestFacebookAccessToken(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestParam("code") String code, @RequestParam("state") String state) {
+        AbstractOAuthService facebookService = ServiceRegistry.instance().getService(ServiceType.FACEBOOK);
+        Response userInfoResponse = facebookService.getResponse(state, code);
+        String redirectUrl = handleResponse(request, userInfoResponse, ServiceType.FACEBOOK, state);
+
+        redirect(response, redirectUrl);
+    }
+
     public void redirect(HttpServletResponse response, String redirectUrl) {
         try {
             response.sendRedirect(redirectUrl);

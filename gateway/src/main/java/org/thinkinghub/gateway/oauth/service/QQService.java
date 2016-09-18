@@ -64,7 +64,7 @@ public class QQService extends AbstractOAuthService {
     public Response getResponse(String state, String code) {
         OAuth20Service service = getOAuthService(state);
         OAuth2AccessToken accessToken = getAccessToken(state, code);
-
+        checkToken(accessToken);
         String openId = getOpenId(accessToken, service);
         EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 
@@ -76,9 +76,4 @@ public class QQService extends AbstractOAuthService {
 
         return response;
     }
-
-    public RetBean getRetBean() {
-        return new RetBean();
-    }
-
 }

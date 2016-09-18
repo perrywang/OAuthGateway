@@ -16,8 +16,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class WeixinService extends AbstractOAuthService {
-    private final String GET_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo";
-
     @Autowired
     private WeixinConfig weixinConfig;
 

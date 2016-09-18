@@ -24,7 +24,8 @@ public class GatewayAccessToken extends OAuth2AccessToken {
     }
 
     public GatewayAccessToken(String errorCode, String errorDesc, String rawResponse) {
-        super(null, null, null, null, null, rawResponse);
+        //here error is used for token as null is not allowed in OAuth2AccessToken
+        super("error", null, null, null, null, rawResponse);
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
     }

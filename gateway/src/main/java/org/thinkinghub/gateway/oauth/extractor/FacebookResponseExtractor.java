@@ -7,17 +7,17 @@ import org.thinkinghub.gateway.oauth.entity.ServiceType;
 public class FacebookResponseExtractor extends BaseResponseExtractor {
     @Override
     ServiceType getServiceType() {
-        return ServiceType.FACEBOOK.FACEBOOK;
+        return ServiceType.FACEBOOK;
     }
 
     @Override
     String getUserIdFieldName() {
-        return null;
+        return "id";
     }
 
     @Override
     String getNickNameFieldName() {
-        return null;
+        return "name";
     }
 
     @Override

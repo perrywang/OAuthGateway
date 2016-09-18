@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @NoArgsConstructor
 @Configuration
+@Data
 @ConfigurationProperties(prefix = "facebook")
-public class FacebookConfig  extends GatewayOAuthConfig{
+public class FacebookConfig extends GatewayOAuthConfig{
+    private String apiVersion;
 }

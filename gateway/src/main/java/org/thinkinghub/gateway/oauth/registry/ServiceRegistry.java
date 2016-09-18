@@ -23,6 +23,9 @@ public class ServiceRegistry {
     @Autowired
     GitHubService gitHubService;
 
+    @Autowired
+    FacebookService facebookService;
+
     @PostConstruct
     public void init() {
         self = this;
@@ -42,6 +45,8 @@ public class ServiceRegistry {
                 return weixinService;
             case GITHUB:
                 return gitHubService;
+            case FACEBOOK:
+                return facebookService;
             default:
                 return null;
         }
