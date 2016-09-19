@@ -1,21 +1,27 @@
 package org.thinkinghub.gateway.oauth.controller;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.github.scribejava.core.model.Response;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
+
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.entity.*;
+
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
@@ -29,7 +35,9 @@ import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 
-import com.github.scribejava.core.model.Response;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,11 +66,12 @@ public class GatewayController {
         if (user != null) {
             OAuthService oauthService = ServiceRegistry.instance().getService(service);
             oauthService.authenticate(user, callbackUrl);
+
         } else {
             throw new UserNotFoundException(String.format("can not find valid user relating with key: %s", key));
         }
     }
-
+    
     @RequestMapping(value = "/oauth/sina", method = RequestMethod.GET)
     public void requestWeiboAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestParam("code") String code,
                                         @RequestParam("state") String state) {
@@ -104,43 +113,45 @@ public class GatewayController {
         redirect(response, redirectUrl);
     }
 
-    @RequestMapping(value = "/oauth/facebook", method = RequestMethod.GET)
-    public void requestFacebookAccessToken(HttpServletRequest request, HttpServletResponse response,
-                                         @RequestParam("code") String code, @RequestParam("state") String state) {
-        AbstractOAuthService facebookService = ServiceRegistry.instance().getService(ServiceType.FACEBOOK);
-        Response userInfoResponse = facebookService.getResponse(state, code);
-        String redirectUrl = handleResponse(request, userInfoResponse, ServiceType.FACEBOOK, state);
+    
 
-        redirect(response, redirectUrl);
+    @RequestMapping(value = "/oauth/{service}", method = RequestMethod.GET)
+    public void requestFacebookAccessToken(@RequestParam("code") String code,
+                                           @RequestParam("state") String state,
+                                           @PathVariable String service) {
+        requestAccessToken(code, state, Enum.valueOf(ServiceType.class, service.toUpperCase()));
     }
 
-    public void redirect(HttpServletResponse response, String redirectUrl) {
+    private void requestAccessToken(String code, String state, ServiceType type) {
+        AbstractOAuthService facebookService = ServiceRegistry.instance().getService(type);
+        Response userInfoResponse = facebookService.getResponse(state, code);
+        String redirectUrl = handleResponse(userInfoResponse, type, state);
         try {
-            response.sendRedirect(redirectUrl);
+            getHttpResponse().sendRedirect(redirectUrl);
         } catch (IOException e) {
             log.error("Exception occurred while redirect the custom callback url",e);
         }
     }
 
-    private String handleResponse(HttpServletRequest request, Response response, ServiceType type, String state) {
+    private String handleResponse(Response response, ServiceType type, String state) {
         AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-        RetBean retBean = resultHandlingService.getRetBean(response, type);
+        GatewayResponse gatewayResponse = resultHandlingService.getRetBean(response, type);
         try {
-            logAuthHistory(ah, retBean);
+            logAuthHistory(ah, gatewayResponse);
         } catch (Exception e) {
             log.error("Exception happens when log an authentication history record", e);
             //here failed to write the record in database, but may try n times as the failure may only happen at that time,
             //but succeed this time.
         }
 
-        String resultStr = Base64Encoder.encode(JsonUtil.toJson(retBean));
+        String resultStr = Base64Encoder.encode(JsonUtil.toJson(gatewayResponse));
         String redirectUrl = ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
-                + getMD5Signature(resultStr);
+                + MD5Encrypt.hashing(resultStr);
 
         return redirectUrl;
     }
 
-    private void logAuthHistory(AuthenticationHistory ah, RetBean ret) {
+    private void logAuthHistory(AuthenticationHistory ah, GatewayResponse ret) {
         ah.setServiceType(ServiceType.WEIBO);
         if (ret.getRetCode() != 0) {
             ah.setErrorCode(ret.getErrorCode());
@@ -160,8 +171,7 @@ public class GatewayController {
         });
     }
 
-    private String getMD5Signature(String str) {
-        return MD5Encrypt.hashing(str);
+    private HttpServletResponse getHttpResponse() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
-
 }

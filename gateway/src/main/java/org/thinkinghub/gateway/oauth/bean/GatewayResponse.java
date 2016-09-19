@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RetBean {
+public class GatewayResponse {
     @JsonProperty("return_code")
     private int retCode; // 0: success, 1: failure
 
@@ -34,7 +34,7 @@ public class RetBean {
     @JsonIgnore
     private String rawResponse;
 
-    public RetBean(String errorCode, String errorDesc, ServiceType service, String rawResponse) {
+    public GatewayResponse(String errorCode, String errorDesc, ServiceType service, String rawResponse) {
         this.retCode = 1;
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
@@ -42,7 +42,7 @@ public class RetBean {
         this.rawResponse = rawResponse;
     }
 
-    public RetBean(String userId, String nickname, String headImage, ServiceType service, String rawResponse) {
+    public GatewayResponse(String userId, String nickname, String headImage, ServiceType service, String rawResponse) {
         this.retCode = 0;
         this.userId = userId;
         this.nickname = nickname;

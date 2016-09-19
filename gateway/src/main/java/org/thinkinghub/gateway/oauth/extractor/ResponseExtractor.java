@@ -1,9 +1,9 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import org.thinkinghub.gateway.oauth.bean.RetBean;
+import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 
 import com.github.scribejava.core.model.Response;
 
 public interface ResponseExtractor {
-    RetBean extract(Response response);
+    GatewayResponse extract(Response response);
 }

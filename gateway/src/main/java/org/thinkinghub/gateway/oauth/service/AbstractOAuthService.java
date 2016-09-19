@@ -34,8 +34,8 @@ public abstract class AbstractOAuthService implements OAuthService {
 
     abstract String getUserInfoUrl();
 
-    String getAppendedUrl() {
-        return null;
+    String getAppendedUrl(GatewayAccessToken token) {
+        return "";
     }
 
     public String getAuthorizationUrl(String state) {
@@ -60,9 +60,8 @@ public abstract class AbstractOAuthService implements OAuthService {
         checkToken(accessToken);
         setAccessToken(accessToken);
         EventPublisherRegistry.getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
-
         // send request to get user info
-        String userInfoUrl = getUserInfoUrl() + (getAppendedUrl() != null ? getAppendedUrl() : "");
+        String userInfoUrl = getUserInfoUrl() + getAppendedUrl(accessToken);
         final OAuthRequest request = new OAuthRequest(Verb.GET, userInfoUrl, service);
         service.signRequest(accessToken, request);
         Response response = request.send();
