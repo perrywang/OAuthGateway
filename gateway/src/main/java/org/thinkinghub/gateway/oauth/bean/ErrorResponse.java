@@ -1,6 +1,7 @@
 package org.thinkinghub.gateway.oauth.bean;
 
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +16,13 @@ public class ErrorResponse {
 	String oauthErrorCode;
 	String oauthErrorMsg;
 	ErrorType errorType;
+	ServiceType serviceType;
 	
-	public ErrorResponse(String gwErrorCode, String gwErrorMsg, ErrorType errorType){
+	public ErrorResponse(String gwErrorCode, String gwErrorMsg, ErrorType errorType, ServiceType serviceType){
 		this.gwErrorCode = gwErrorCode;
 		this.gwErrorMsg = gwErrorMsg;
 		this.errorType = errorType;
+		this.serviceType = serviceType;
 	}
 	
 	@Override

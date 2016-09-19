@@ -56,7 +56,7 @@ public class GlobalExceptionHandlingController {
 		log.error("Request " + request.getRequestURL() + " raised " + exception);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 		err = new ErrorResponse(exception.getErrorCode(),
-				LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()), ErrorType.THIRDPARTY);
+				LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()), ErrorType.THIRDPARTY, ah.getServiceType());
 		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
 		String redirectUrl = ah.getCallback() + "?error=" + exception.getErrorCode() + " - "
 				+ LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode());
@@ -74,7 +74,7 @@ public class GlobalExceptionHandlingController {
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
 		err = new ErrorResponse(exception.getErrorCode(),
 				LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()), exception.getErrCode(),
-				exception.getErrMsg(), ErrorType.THIRDPARTY);
+				exception.getErrMsg(), ErrorType.THIRDPARTY, ah.getServiceType());
 		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
 		String redirectUrl = ah.getCallback() + "?error=" + err.toString();
 		try {
