@@ -2,14 +2,11 @@ package org.thinkinghub.gateway.oauth.extractor;
 
 import com.github.scribejava.core.model.Response;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
-import java.io.IOException;
-
-import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
-import com.github.scribejava.core.model.Response;
+import java.io.IOException;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
 	public GatewayResponse extract(Response response) {
