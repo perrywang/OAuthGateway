@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 public class ErrorResponse {
 	String gwErrorCode;
+	String gwErrorMsg;
 	String oauthErrorCode;
 	String oauthErrorMsg;
 	
 	@Override
 	public String toString(){
 		return "{\"gwErrorCode\":"+ gwErrorCode 
+				+","+"\"gwErrorMsg\":\"" + gwErrorMsg
     			+","+"\"oauthErrorCode\":\"" + oauthErrorCode
     			+"\","+"\"oauthErrorMsg\":\"" + oauthErrorMsg
     			+"\"}";

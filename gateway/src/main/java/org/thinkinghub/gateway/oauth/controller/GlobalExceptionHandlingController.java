@@ -50,7 +50,7 @@ public class GlobalExceptionHandlingController {
 	public void gatewayError(HttpServletRequest request,@RequestParam("state")String state, HttpServletResponse response, GatewayException exception){
 		log.error("Request "+ request.getRequestURL() + " raised " + exception);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()) ;
+		String redirectUrl = ah.getCallback() + "?error=" + exception.getErrorCode() + " - " + LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()) ;
 		try{
 		response.sendRedirect(redirectUrl);
 		}catch(IOException e){
@@ -62,7 +62,7 @@ public class GlobalExceptionHandlingController {
 	public void oauthError(HttpServletRequest request,@RequestParam("state")String state, HttpServletResponse response, OAuthProcessingException exception){
 		log.error("Request "+ request.getRequestURL() + " raised " + exception);
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		err = new ErrorResponse(LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()),exception.getErrCode(),exception.getErrMsg());
+		err = new ErrorResponse(exception.getErrorCode(),LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()),exception.getErrCode(),exception.getErrMsg());
 		String redirectUrl = ah.getCallback() + "?error=" + err.toString();
 		try{
 		response.sendRedirect(redirectUrl);
