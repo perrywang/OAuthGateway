@@ -50,9 +50,9 @@ public class GatewayController {
     private ResultHandlingService resultHandlingService;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
-    public void route(@RequestParam(value = "callbackUrl", required = true) String callbackUrl,
-                      @RequestParam(value = "key", required = true) String key,
-                      @RequestParam(value = "service", required = true) ServiceType service, HttpServletResponse response,
+    public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
+                      @RequestParam(value = "key", required = false) String key,
+                      @RequestParam(value = "service", required = false) ServiceType service, HttpServletResponse response,
                       HttpServletRequest request) {
         User user = userRepository.findByKey(key);
         if (user != null) {
@@ -118,8 +118,7 @@ public class GatewayController {
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
-            //TODO
-            e.printStackTrace();
+            log.error("Exception occurred while redirect the custom callback url",e);
         }
     }
 
@@ -135,7 +134,7 @@ public class GatewayController {
         }
 
         String resultStr = Base64Encoder.encode(JsonUtil.toJson(retBean));
-        String redirectUrl = request.getScheme() + "://" + ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
+        String redirectUrl = ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
                 + getMD5Signature(resultStr);
 
         return redirectUrl;

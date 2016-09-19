@@ -12,6 +12,7 @@ import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
 import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.exception.OAuthProcessingException;
 import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
 import org.thinkinghub.gateway.util.IDGenerator;
 
@@ -22,8 +23,10 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
+@Slf4j
 public abstract class AbstractOAuthService implements OAuthService {
     private GatewayAccessToken accessToken;
 
@@ -46,9 +49,9 @@ public abstract class AbstractOAuthService implements OAuthService {
             accessToken = (GatewayAccessToken) getOAuthService(state).getAccessToken(code);
             return accessToken;
         } catch (IOException e) {
-
+        	log.error("IOException occurred while getting Access Token",e);
+        	throw new OAuthProcessingException("","");
         }
-        return accessToken;
     }
 
     public Response getResponse(String state, String code) {

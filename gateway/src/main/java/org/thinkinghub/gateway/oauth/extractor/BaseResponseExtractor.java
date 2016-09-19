@@ -1,12 +1,13 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import com.github.scribejava.core.model.Response;
+import java.io.IOException;
+
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
-import java.io.IOException;
+import com.github.scribejava.core.model.Response;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
 	public RetBean extract(Response response) {
@@ -35,6 +36,14 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 	abstract ServiceType getServiceType();
 
 	abstract String getUserIdFieldName();
+
+	String getUserId(Response response) {
+		try {
+			return JsonUtil.getValue(response.getBody(), getUserIdFieldName());
+		} catch (IOException e) {
+			throw new GatewayException("GW000007", e);
+		}
+	}
 
 	abstract String getNickNameFieldName();
 

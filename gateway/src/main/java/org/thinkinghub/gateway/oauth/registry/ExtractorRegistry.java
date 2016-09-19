@@ -42,7 +42,7 @@ public class ExtractorRegistry {
             case QQ:
                 return qqRX;
             case WEIBO:
-                return weiboRX;
+            	return weiboRX;
             case WECHAT:
                 return weixinRX;
             case GITHUB:
@@ -50,7 +50,8 @@ public class ExtractorRegistry {
             case FACEBOOK:
                 return facebookRX;
         }
-        throw new ServiceNotSupportedException("Service " + service + " is not supported currently");
+        throw new ServiceNotSupportedException(service.name());
+        
     }
 
 }

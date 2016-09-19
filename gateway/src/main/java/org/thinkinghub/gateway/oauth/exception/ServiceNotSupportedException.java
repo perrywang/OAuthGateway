@@ -5,4 +5,8 @@ public class ServiceNotSupportedException extends GatewayException {
     public ServiceNotSupportedException(String message) {
         super(message);
     }
+    
+    public String getErrorCode(){
+    	return "GW010";
+    }
 }
