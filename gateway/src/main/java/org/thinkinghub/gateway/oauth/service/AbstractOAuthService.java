@@ -66,7 +66,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
     
     protected void checkToken(OAuth2AccessToken accessToken){
-        if(accessToken.equals("error")){
+        if("error".equals(accessToken.getAccessToken())){
             //TODO exception handling required?
             throw new BadAccessTokenException("can not get correct access token");
         }
