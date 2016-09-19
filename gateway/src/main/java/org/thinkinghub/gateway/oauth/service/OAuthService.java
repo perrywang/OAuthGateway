@@ -6,7 +6,7 @@ import org.thinkinghub.gateway.oauth.entity.User;
 
 public interface OAuthService {
     
-    void authenticate(User user, String callback);
+    String authenticate(User user, String callback);
     
     GatewayResponse authenticated(String code, String state);
     
