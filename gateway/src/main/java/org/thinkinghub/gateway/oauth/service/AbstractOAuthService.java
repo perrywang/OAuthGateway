@@ -10,6 +10,7 @@ import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
+import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
 import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
@@ -65,7 +66,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
     
     protected void checkToken(OAuth2AccessToken accessToken){
-        if(("error").equals(accessToken.getAccessToken())){
+        if("error".equals(accessToken.getAccessToken())){
             //TODO exception handling required?
             throw new BadAccessTokenException("can not get correct access token");
         }
@@ -73,6 +74,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     
     @Override
     public GatewayResponse authenticated(String state, String code) {
+        EventPublisher.instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(),state));
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
@@ -82,7 +84,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public void authenticate(User user, String callback) {
+    public String authenticate(User user, String callback) {
         String state = Long.toString(IDGenerator.nextId());
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         HttpServletResponse response = sra.getResponse();
@@ -91,8 +93,8 @@ public abstract class AbstractOAuthService implements OAuthService {
         } catch (IOException e) {
             throw new GatewayException("start oauth process failed");
         }
-        
         EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user,this.supportedOAuthType(),state,callback));
+        return state;
     }
 
 }
