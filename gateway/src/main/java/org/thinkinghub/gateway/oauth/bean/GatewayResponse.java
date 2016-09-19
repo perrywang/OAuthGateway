@@ -25,22 +25,8 @@ public class GatewayResponse {
 
     private ServiceType service;
 
-    @JsonProperty("error_code")
-    private String errorCode;
-
-    @JsonProperty("error_desc")
-    private String errorDesc;
-
     @JsonIgnore
     private String rawResponse;
-
-    public GatewayResponse(String errorCode, String errorDesc, ServiceType service, String rawResponse) {
-        this.retCode = 1;
-        this.errorCode = errorCode;
-        this.errorDesc = errorDesc;
-        this.service = service;
-        this.rawResponse = rawResponse;
-    }
 
     public GatewayResponse(String userId, String nickname, String headImage, ServiceType service, String rawResponse) {
         this.retCode = 0;
