@@ -26,8 +26,6 @@ import org.thinkinghub.gateway.util.IDGenerator;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @Slf4j
 public class GatewayController {
@@ -50,8 +48,7 @@ public class GatewayController {
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
                       @RequestParam(value = "key", required = false) String key,
-                      @RequestParam(value = "service", required = false) ServiceType service, HttpServletResponse response,
-                      HttpServletRequest request) {
+                      @RequestParam(value = "service", required = false) ServiceType service) {
         User user = userRepository.findByKey(key);
         if (user != null) {
             String state = Long.toString(IDGenerator.nextId());
@@ -62,8 +59,7 @@ public class GatewayController {
             try {
                 getHttpResponse().sendRedirect(returnURL);
             } catch (IOException e) {
-                //TODO
-                e.printStackTrace();
+                log.error("Exception occurred while redirect the custom callback url", e);
             }
         } else {
             throw new UserNotFoundException(String.format("can not find valid user relating with key: %s", key));
@@ -84,7 +80,7 @@ public class GatewayController {
         try {
             getHttpResponse().sendRedirect(redirectUrl);
         } catch (IOException e) {
-            log.error("Exception occurred while redirect the custom callback url",e);
+            log.error("Exception occurred while redirect the custom callback url", e);
         }
     }
 
