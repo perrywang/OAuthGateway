@@ -40,7 +40,6 @@ public class GatewayController {
         if (user != null) {
             OAuthService oauthService = ServiceRegistry.getService(service);
             oauthService.authenticate(user, callbackUrl);
-
         } else {
             throw new UserNotFoundException(String.format("can not find valid user relating with key: %s", key));
         }
