@@ -21,26 +21,26 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class GatewayEventsHandler {
-    
+
     @Autowired
     private AuthenticationHistoryRepository authenticationHistoryRepository;
-    
+
     @Autowired
     private QueueService queueService;
-    
+
     @EventListener
     public void onAccessTokenRetrived(AccessTokenRetrievedEvent event) {
-        
+
         AuthenticationHistory ah = authenticationHistoryRepository.findByState(event.getState());
         ah.setServiceStatus(ServiceStatus.SUCCESS);
-        
+
         OAuth2AccessToken accessToken = event.getToken();
         log.info("Got the Access Token!");
         log.info("(if your curious it looks like this: " + accessToken + ", 'rawResponse'='"
                 + accessToken.getRawResponse() + "')");
 
     }
-    
+
     @EventListener
     public void onStartingOAuthProcess(StartingOAuthProcessEvent event) {
         AuthenticationHistory ah = new AuthenticationHistory();
@@ -51,7 +51,7 @@ public class GatewayEventsHandler {
         ah.setServiceStatus(ServiceStatus.INPROGRESS);
         authenticationHistoryRepository.save(ah);
     }
-    
+
     @EventListener
     public void onOAuthProviderCallbackReceived(OAuthProviderCallbackReceivedEvent event) {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
@@ -64,17 +64,10 @@ public class GatewayEventsHandler {
         GatewayResponse response = event.getResponse();
         logAuthHistory(ah, response);
     }
-    
-    private void logAuthHistory(AuthenticationHistory ah, GatewayResponse ret) {
-        if (ret.getRetCode() != 0) {
-            ah.setErrorCode(ret.getErrorCode());
-            ah.setErrorDesc(ret.getErrorDesc());
-            ah.setServiceStatus(ServiceStatus.FAILURE);
-            ah.setErrorType(ErrorType.THIRDPARTY);
-        } else {
-            ah.setServiceStatus(ServiceStatus.SUCCESS);
-        }
-        ah.setRawResponse(ret.getRawResponse());
+
+    private void logAuthHistory(AuthenticationHistory ah, GatewayResponse response) {
+        ah.setServiceStatus(ServiceStatus.SUCCESS);
+        ah.setRawResponse(response.getRawResponse());
         queueService.put(new QueuableTask() {
             @Override
             public void execute() {
