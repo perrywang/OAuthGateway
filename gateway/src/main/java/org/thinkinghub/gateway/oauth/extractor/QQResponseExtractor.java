@@ -28,9 +28,9 @@ public class QQResponseExtractor extends BaseResponseExtractor {
 				return matcher.group(0);
 			}
 		} catch (Exception e) {
-			throw new GatewayException("QQ can't extract openid", e);
+			throw new GatewayException("GW008", e);
 		}
-		throw new GatewayException("QQ can't extract openid");
+		throw new GatewayException("GW009");
 	}
 
 	public String getNickNameFieldName() {
