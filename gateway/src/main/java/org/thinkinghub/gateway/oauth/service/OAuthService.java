@@ -1,6 +1,6 @@
 package org.thinkinghub.gateway.oauth.service;
 
-import org.thinkinghub.gateway.oauth.bean.RetBean;
-
 public interface OAuthService {
+    //void authenticate(User user, String callback);
+    //GatewayResponse authenticated(String code, String state);
 }

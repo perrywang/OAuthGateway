@@ -16,14 +16,13 @@ import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
 
 @Data
 public abstract class AbstractOAuthService implements OAuthService {
-    private GatewayAccessToken accessToken;
 
     protected abstract OAuth20Service getOAuthService(String state);
 
     abstract String getUserInfoUrl();
 
-    String getAppendedUrl() {
-        return null;
+    String getAppendedUrl(GatewayAccessToken token) {
+        return "";
     }
 
     public String getAuthorizationUrl(String state) {
@@ -37,7 +36,7 @@ public abstract class AbstractOAuthService implements OAuthService {
             accessToken = (GatewayAccessToken) getOAuthService(state).getAccessToken(code);
             return accessToken;
         } catch (IOException e) {
-
+            //TODO exception handling required?
         }
         return accessToken;
     }
@@ -46,11 +45,11 @@ public abstract class AbstractOAuthService implements OAuthService {
         OAuth20Service service = getOAuthService(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
-        setAccessToken(accessToken);
+
         EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 
         // send request to get user info
-        String userInfoUrl = getUserInfoUrl() + (getAppendedUrl() != null ? getAppendedUrl() : "");
+        String userInfoUrl = getUserInfoUrl() + getAppendedUrl(accessToken);
         final OAuthRequest request = new OAuthRequest(Verb.GET, userInfoUrl, service);
         service.signRequest(accessToken, request);
         Response response = request.send();

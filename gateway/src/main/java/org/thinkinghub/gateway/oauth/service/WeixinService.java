@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeixinApi;
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.config.WeixinConfig;
 
 import javax.annotation.PostConstruct;
@@ -45,7 +46,7 @@ public class WeixinService extends AbstractOAuthService {
     }
 
     @Override
-    String getAppendedUrl() {
-        return "?openid=" + getAccessToken().getUserId();
+    String getAppendedUrl(GatewayAccessToken accessToken) {
+        return "?openid=" + accessToken.getUserId();
     }
 }

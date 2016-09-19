@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.WeiboApi;
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.config.WeiboConfig;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +38,12 @@ public class WeiboService extends AbstractOAuthService {
     }
 
     @Override
-    String getAppendedUrl() {
-        return "?uid=" + getAccessToken().getUserId();
+    String getAppendedUrl(GatewayAccessToken token) {
+        return "?uid=" + token.getUserId();
     }
+
+    String getUserId(GatewayAccessToken token){
+        return token.getUserId();
+    }
+
 }

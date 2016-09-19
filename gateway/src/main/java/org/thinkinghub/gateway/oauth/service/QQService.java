@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.QQApi;
-import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.config.QQConfig;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
