@@ -14,6 +14,7 @@ import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
@@ -25,7 +26,7 @@ import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 
 @RestController
 public class GatewayController {
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -41,28 +42,26 @@ public class GatewayController {
             OAuthService oauthService = ServiceRegistry.getService(service);
             oauthService.authenticate(user, callbackUrl);
         } else {
-            throw new UserNotFoundException(String.format("can not find valid user relating with key: %s", key));
+            throw new UserNotFoundException();
         }
     }
 
     @RequestMapping(value = "/oauth/{service}", method = RequestMethod.GET)
     public void oauthProviderCallback(HttpServletResponse response, @RequestParam("code") String code,
-                                           @RequestParam("state") String state,
-                                           @PathVariable String service) {
+                                      @RequestParam("state") String state,
+                                      @PathVariable String service) {
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
         GatewayResponse gatewayResponse = oauthService.authenticated(code, state);
         String matchedCallback = authenticationHistoryRepository.findByState(state).getCallback();
         try {
-            response.sendRedirect(generateRedirectUrl(gatewayResponse,matchedCallback));
+            response.sendRedirect(generateRedirectUrl(gatewayResponse, matchedCallback));
         } catch (IOException e) {
-            throw new GatewayException("error when redirect to user callback page");
+            throw new RedirectUrlException();
         }
     }
 
-
     private String generateRedirectUrl(GatewayResponse response, String callback) {
-        
         String resultStr = Base64Encoder.encode(JsonUtil.toJson(response));
         String redirectUrl = callback + "?userInfo=" + resultStr + "&md5signature="
                 + MD5Encrypt.hashing(resultStr);

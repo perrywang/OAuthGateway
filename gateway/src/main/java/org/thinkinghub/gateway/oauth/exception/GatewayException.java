@@ -4,10 +4,14 @@ public class GatewayException extends RuntimeException {
 
     private static final long serialVersionUID = 6663442273794973163L;
     
-    public String getErrorCode(){
-    	return "GW-999";
+    public String getGWErrorCode(){
+    	return "GW99999";
     }
-    
+
+    public GatewayException() {
+        super();
+    }
+
     public GatewayException(String message) {
         super(message);
     }

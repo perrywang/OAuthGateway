@@ -5,18 +5,13 @@ import lombok.Getter;
 @Getter
 public class OAuthProcessingException extends GatewayException {
 
-	private static final long serialVersionUID = -253028809896546433L;
-	
-	String errCode;
-	String errMsg;
-	
-	public OAuthProcessingException(String errCode, String errMsg) {
-		super(errMsg);
-		this.errCode = errCode;
-		this.errMsg = errMsg;
-	}
+    private static final long serialVersionUID = -253028809896546433L;
 
-	public String getErrorCode() {
-		return "GW100";
-	}
+    String errCode;// third-party error code
+    String errMsg; // third-party error message
+
+    public OAuthProcessingException(String errCode, String errMsg) {
+        this.errCode = errCode;
+        this.errMsg = errMsg;
+    }
 }

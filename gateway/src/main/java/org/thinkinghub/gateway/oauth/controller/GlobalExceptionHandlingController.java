@@ -28,60 +28,55 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandlingController {
 
-	@Resource
-	private LocaleMessageSourceRegistry localeMessageSourceService;
+    @Resource
+    private LocaleMessageSourceRegistry localeMessageSourceService;
 
-	@Autowired
-	private AuthenticationHistoryRepository authenticationHistoryRepository;
+    @Autowired
+    private AuthenticationHistoryRepository authenticationHistoryRepository;
 
-	private ErrorResponse err;
+    @ExceptionHandler({OAuthProcessingException.class})
+    public void oauthError(HttpServletRequest request, @RequestParam("state") String state,
+                           HttpServletResponse response, OAuthProcessingException exception) {
+        log.error("Request " + request.getRequestURL() + " raised " + exception);
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
+                LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrCode(),
+                exception.getErrMsg(), ErrorType.THIRDPARTY, ah.getServiceType());
+        EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
+        String redirectUrl = ah.getCallback() + "?error=" + err.toString();
+        redirect(response, redirectUrl);
+    }
 
-	@ExceptionHandler({ Exception.class })
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public void defaultError(HttpServletRequest request, @RequestParam("state") String state,
-			HttpServletResponse response, Exception exception) {
-		log.error("Request " + request.getRequestURL() + " raised " + exception);
-		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW999");
-		try {
-			response.sendRedirect(redirectUrl);
-		} catch (IOException e) {
-			throw new GatewayException("IOException occurred");
-		}
-	}
+    @ExceptionHandler({GatewayException.class})
+    public void gatewayError(HttpServletRequest request, @RequestParam("state") String state,
+                             HttpServletResponse response, GatewayException exception) {
+        log.error("Request " + request.getRequestURL() + " raised " + exception);
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
+                LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()),
+                ErrorType.GATEWAY, ah.getServiceType());
+        EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
+        String redirectUrl = ah.getCallback() + "?error=" + exception.getGWErrorCode() + " - "
+                + LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode());
+        redirect(response, redirectUrl);
+    }
 
-	@ExceptionHandler({ GatewayException.class })
-	public void gatewayError(HttpServletRequest request, @RequestParam("state") String state,
-			HttpServletResponse response, GatewayException exception) {
-		log.error("Request " + request.getRequestURL() + " raised " + exception);
-		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		err = new ErrorResponse(exception.getErrorCode(),
-				LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()), ErrorType.THIRDPARTY, ah.getServiceType());
-		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-		String redirectUrl = ah.getCallback() + "?error=" + exception.getErrorCode() + " - "
-				+ LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode());
-		try {
-			response.sendRedirect(redirectUrl);
-		} catch (IOException e) {
-			throw new GatewayException("IOException occurred");
-		}
-	}
+    @ExceptionHandler({Exception.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public void defaultError(HttpServletRequest request, @RequestParam("state") String state,
+                             HttpServletResponse response, Exception exception) {
+        log.error("Request " + request.getRequestURL() + " raised " + exception);
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW999");
+        redirect(response, redirectUrl);
+    }
 
-	@ExceptionHandler({ OAuthProcessingException.class })
-	public void oauthError(HttpServletRequest request, @RequestParam("state") String state,
-			HttpServletResponse response, OAuthProcessingException exception) {
-		log.error("Request " + request.getRequestURL() + " raised " + exception);
-		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-		err = new ErrorResponse(exception.getErrorCode(),
-				LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode()), exception.getErrCode(),
-				exception.getErrMsg(), ErrorType.THIRDPARTY, ah.getServiceType());
-		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-		String redirectUrl = ah.getCallback() + "?error=" + err.toString();
-		try {
-			response.sendRedirect(redirectUrl);
-		} catch (IOException e) {
-			throw new GatewayException("IOException occurred");
-		}
-	}
+    private void redirect(HttpServletResponse response, String redirectUrl) {
+        try {
+            response.sendRedirect(redirectUrl);
+        } catch (IOException e) {
+            log.error("Exception occurs when redirecting to the url: " + redirectUrl, e);
+        }
+    }
 
 }
