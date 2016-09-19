@@ -1,13 +1,17 @@
 package org.thinkinghub.gateway.oauth.registry;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.ServiceNotSupportedException;
-import org.thinkinghub.gateway.oauth.extractor.*;
-
-import javax.annotation.PostConstruct;
+import org.thinkinghub.gateway.oauth.extractor.FacebookResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.GitHubResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.QQResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.ResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.WeiboResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.WeixinResponseExtractor;
 
 @Service
 public class ExtractorRegistry {
@@ -38,7 +42,7 @@ public class ExtractorRegistry {
             case QQ:
                 return qqRX;
             case WEIBO:
-                return weiboRX;
+            	return weiboRX;
             case WECHAT:
                 return weixinRX;
             case GITHUB:
@@ -46,7 +50,8 @@ public class ExtractorRegistry {
             case FACEBOOK:
                 return facebookRX;
         }
-        throw new ServiceNotSupportedException("Service " + service + " is not supported currently");
+        throw new ServiceNotSupportedException(service.name());
+        
     }
 
 }

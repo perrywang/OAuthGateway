@@ -1,12 +1,13 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import com.github.scribejava.core.model.Response;
+import java.io.IOException;
+
 import org.thinkinghub.gateway.oauth.bean.RetBean;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
-import java.io.IOException;
+import com.github.scribejava.core.model.Response;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
 	public RetBean extract(Response response) {
@@ -23,7 +24,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 				return new RetBean(errorCode, errorDesc, getServiceType(), response.getBody());
 			}
 		} catch (IOException e) {
-			throw new GatewayException("can't extract data from response ", e);
+			throw new GatewayException("GW000006", e);
 		}
 	}
 
@@ -39,7 +40,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 		try {
 			return JsonUtil.getValue(response.getBody(), getUserIdFieldName());
 		} catch (IOException e) {
-			throw new GatewayException("can't found openid", e);
+			throw new GatewayException("GW000007", e);
 		}
 	}
 

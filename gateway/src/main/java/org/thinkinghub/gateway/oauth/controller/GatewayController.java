@@ -55,23 +55,12 @@ public class GatewayController {
 
     @Autowired
     private ResultHandlingService resultHandlingService;
-    private void checkRequestParam(String key, String callbackUrl, ServiceType service){
-    	if (key == null){
-    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000001"));
-    	}
-    	if (callbackUrl == null){
-    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000002"));
-    	}
-    	if (service == null){
-    		throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000003"));
-    	}
-    }
+
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
                       @RequestParam(value = "key", required = false) String key,
                       @RequestParam(value = "service", required = false) ServiceType service, HttpServletResponse response,
                       HttpServletRequest request) {
-    	checkRequestParam(key, callbackUrl, service);
         User user = userRepository.findByKey(key);
         if (user != null) {
             String state = Long.toString(IDGenerator.nextId());
@@ -89,8 +78,7 @@ public class GatewayController {
         try {
             response.sendRedirect(returnURL);
         } catch (IOException e) {
-            e.printStackTrace();
-        	throw new GatewayException(LocaleMessageSourceRegistry.instance().getMessage("GW000004"));
+            log.error("Exception occurred while redirect the url to end user",e);
         }
     }
 
@@ -139,8 +127,7 @@ public class GatewayController {
         try {
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
-            //TODO
-            e.printStackTrace();
+            log.error("Exception occurred while redirect the custom callback url",e);
         }
     }
 
@@ -156,7 +143,7 @@ public class GatewayController {
         }
 
         String resultStr = Base64Encoder.encode(JsonUtil.toJson(retBean));
-        String redirectUrl = request.getScheme() + "://" + ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
+        String redirectUrl = ah.getCallback() + "?userInfo=" + resultStr + "&md5signature="
                 + getMD5Signature(resultStr);
 
         return redirectUrl;
