@@ -8,18 +8,20 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventPublisherRegistry {
-    private static EventPublisherRegistry self;
+public class EventPublisher {
+    
+    private static EventPublisher self;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
     @PostConstruct
     public void initialize(){
-        EventPublisherRegistry.self = this;
+        EventPublisher.self = this;
     }
 
-    public static ApplicationEventPublisher getEventPublisher(){
+    public static ApplicationEventPublisher instance(){
         return self.eventPublisher;
     }
+
 }

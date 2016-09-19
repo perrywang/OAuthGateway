@@ -1,9 +1,5 @@
 package org.thinkinghub.gateway.oauth.registry;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.ServiceNotSupportedException;
 import org.thinkinghub.gateway.oauth.extractor.FacebookResponseExtractor;
@@ -13,43 +9,30 @@ import org.thinkinghub.gateway.oauth.extractor.ResponseExtractor;
 import org.thinkinghub.gateway.oauth.extractor.WeiboResponseExtractor;
 import org.thinkinghub.gateway.oauth.extractor.WeixinResponseExtractor;
 
-@Service
 public class ExtractorRegistry {
-    private static ExtractorRegistry self;
-
-    @Autowired
-    QQResponseExtractor qqRX ;
-    @Autowired
-    WeiboResponseExtractor weiboRX ;
-    @Autowired
-    WeixinResponseExtractor weixinRX ;
-    @Autowired
-    GitHubResponseExtractor githubRX ;
-    @Autowired
-    FacebookResponseExtractor facebookRX ;
-
-    @PostConstruct
-    public void init() {
-        self = this;
+  
+    private static class Extractors {
+        static final ResponseExtractor qqRX = new QQResponseExtractor();
+        static final ResponseExtractor weiboRX = new WeiboResponseExtractor();
+        static final ResponseExtractor weixinRX = new WeixinResponseExtractor();
+        static final ResponseExtractor githubRX = new GitHubResponseExtractor();
+        static final ResponseExtractor facebookRX = new FacebookResponseExtractor();
     }
 
-    public static ExtractorRegistry instance() {
-        return self;
-    }
-
-    public ResponseExtractor getExtractor(ServiceType service) {
+    public static ResponseExtractor getExtractor(ServiceType service) {
         switch (service) {
             case QQ:
-                return qqRX;
+                return Extractors.qqRX;
             case WEIBO:
-            	return weiboRX;
+            	return Extractors.weiboRX;
             case WECHAT:
-                return weixinRX;
+                return Extractors.weixinRX;
             case GITHUB:
-                return githubRX;
+                return Extractors.githubRX;
             case FACEBOOK:
-                return facebookRX;
+                return Extractors.facebookRX;
         }
+        
         throw new ServiceNotSupportedException(service.name());
         
     }

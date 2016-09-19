@@ -1,9 +1,7 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import org.springframework.stereotype.Component;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
-@Component("Facebook")
 public class FacebookResponseExtractor extends BaseResponseExtractor {
     @Override
     ServiceType getServiceType() {
