@@ -2,17 +2,26 @@ package org.thinkinghub.gateway.oauth.service;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
+import org.thinkinghub.gateway.oauth.entity.User;
+import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
+import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
+import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
+import org.thinkinghub.gateway.util.IDGenerator;
+
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
-import lombok.Data;
-import org.thinkinghub.gateway.core.token.GatewayAccessToken;
-
 import com.github.scribejava.core.oauth.OAuth20Service;
-import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
-import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
+
+import lombok.Data;
 
 @Data
 public abstract class AbstractOAuthService implements OAuthService {
@@ -47,7 +56,7 @@ public abstract class AbstractOAuthService implements OAuthService {
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
         setAccessToken(accessToken);
-        EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
+        EventPublisherRegistry.getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 
         // send request to get user info
         String userInfoUrl = getUserInfoUrl() + (getAppendedUrl() != null ? getAppendedUrl() : "");
@@ -63,6 +72,20 @@ public abstract class AbstractOAuthService implements OAuthService {
             //TODO exception handling required?
             throw new BadAccessTokenException("can not get correct access token");
         }
+    }
+
+    @Override
+    public void authenticate(User user, String callback) {
+        String state = Long.toString(IDGenerator.nextId());
+        ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        HttpServletResponse response = sra.getResponse();
+        try {
+            response.sendRedirect(callback);
+        } catch (IOException e) {
+            throw new GatewayException("start oauth process failed");
+        }
+        
+        EventPublisherRegistry.getEventPublisher().publishEvent(new StartingOAuthProcessEvent(user, state, callback));
     }
 
 }

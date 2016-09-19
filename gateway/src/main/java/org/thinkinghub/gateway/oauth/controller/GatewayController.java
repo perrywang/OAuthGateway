@@ -1,39 +1,41 @@
 package org.thinkinghub.gateway.oauth.controller;
 
-import com.github.scribejava.core.model.Response;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.bean.RetBean;
-import org.thinkinghub.gateway.oauth.entity.*;
-import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
+import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
+import org.thinkinghub.gateway.oauth.entity.ErrorType;
+import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
-import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
+import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
 import org.thinkinghub.gateway.oauth.service.AbstractOAuthService;
+import org.thinkinghub.gateway.oauth.service.OAuthService;
 import org.thinkinghub.gateway.oauth.service.QueueService;
 import org.thinkinghub.gateway.oauth.service.ResultHandlingService;
-import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.util.Base64Encoder;
+import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
-import org.thinkinghub.gateway.util.IDGenerator;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.github.scribejava.core.model.Response;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
 public class GatewayController {
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private UserRepository userRepository;
@@ -54,23 +56,10 @@ public class GatewayController {
                       HttpServletRequest request) {
         User user = userRepository.findByKey(key);
         if (user != null) {
-            String state = Long.toString(IDGenerator.nextId());
-            eventPublisher.publishEvent(new StartingRetriveAccessTokenEvent(user, state, callbackUrl));
-            AbstractOAuthService oauthService = ServiceRegistry.instance().getService(service);
-
-            login(state, response, oauthService);
+            OAuthService oauthService = ServiceRegistry.instance().getService(service);
+            oauthService.authenticate(user, callbackUrl);
         } else {
             throw new UserNotFoundException(String.format("can not find valid user relating with key: %s", key));
-        }
-    }
-
-    private void login(String state, HttpServletResponse response, AbstractOAuthService oauthService) {
-        String returnURL = oauthService.getAuthorizationUrl(state);
-        try {
-            response.sendRedirect(returnURL);
-        } catch (IOException e) {
-            //TODO
-            e.printStackTrace();
         }
     }
 

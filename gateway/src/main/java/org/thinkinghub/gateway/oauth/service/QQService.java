@@ -68,7 +68,7 @@ public class QQService extends AbstractOAuthService {
         OAuth2AccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
         String openId = getOpenId(accessToken, service);
-        EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
+        EventPublisherRegistry.getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 
         // send request to get user info
         final OAuthRequest request = new OAuthRequest(Verb.GET,

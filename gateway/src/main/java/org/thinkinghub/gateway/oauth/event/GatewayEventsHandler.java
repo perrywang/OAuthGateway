@@ -32,7 +32,7 @@ public class GatewayEventsHandler {
     }
     
     @EventListener
-    public void onRetriveAccessTokenStarting(StartingRetriveAccessTokenEvent event) {
+    public void onStartingOAuthProcess(StartingOAuthProcessEvent event) {
         
         AuthenticationHistory ah = new AuthenticationHistory();
         ah.setState(event.getState());

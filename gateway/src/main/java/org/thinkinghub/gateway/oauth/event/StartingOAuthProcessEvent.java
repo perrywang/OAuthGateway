@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class StartingRetriveAccessTokenEvent extends GatewayEvent {
+public class StartingOAuthProcessEvent extends GatewayEvent {
     
     private User user;
     
@@ -15,7 +15,7 @@ public class StartingRetriveAccessTokenEvent extends GatewayEvent {
     
     private String callback;
     
-    public StartingRetriveAccessTokenEvent(User user, String state, String callback) {
+    public StartingOAuthProcessEvent(User user, String state, String callback) {
         this.user = user;
         this.state = state;
         this.callback = callback;

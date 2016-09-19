@@ -19,11 +19,7 @@ public class EventPublisherRegistry {
         EventPublisherRegistry.self = this;
     }
 
-    public ApplicationEventPublisher getEventPublisher(){
-        return eventPublisher;
-    }
-
-    public static EventPublisherRegistry instance(){
-        return self;
+    public static ApplicationEventPublisher getEventPublisher(){
+        return self.eventPublisher;
     }
 }
