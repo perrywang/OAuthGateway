@@ -10,6 +10,7 @@ import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
+import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
 import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
@@ -56,7 +57,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     
     protected abstract GatewayResponse parseUserInfoResponse(Response response);
     
-    protected GatewayResponse retriveUserInfo(GatewayAccessToken accessToken, OAuth20Service service) {
+    protected GatewayResponse retrieveUserInfo(GatewayAccessToken accessToken, OAuth20Service service) {
         String userInfoUrl = getUserInfoUrl() + getAppendedUrl(accessToken);
         final OAuthRequest request = new OAuthRequest(Verb.GET, userInfoUrl, service);
         service.signRequest(accessToken, request);
@@ -65,7 +66,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
     
     protected void checkToken(OAuth2AccessToken accessToken){
-        if(accessToken.equals("error")){
+        if("error".equals(accessToken.getAccessToken())){
             //TODO exception handling required?
             throw new BadAccessTokenException("can not get correct access token");
         }
@@ -73,10 +74,11 @@ public abstract class AbstractOAuthService implements OAuthService {
     
     @Override
     public GatewayResponse authenticated(String state, String code) {
+        EventPublisher.instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(),state));
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
-        GatewayResponse gatewayResponse = retriveUserInfo(accessToken,service);
+        GatewayResponse gatewayResponse = retrieveUserInfo(accessToken,service);
         EventPublisher.instance().publishEvent(new OAuthProcessFinishedEvent(gatewayResponse, state));
         return gatewayResponse;
     }
