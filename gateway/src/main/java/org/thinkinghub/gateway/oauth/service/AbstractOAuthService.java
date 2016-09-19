@@ -82,7 +82,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public void authenticate(User user, String callback) {
+    public String authenticate(User user, String callback) {
         String state = Long.toString(IDGenerator.nextId());
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         HttpServletResponse response = sra.getResponse();
@@ -91,8 +91,8 @@ public abstract class AbstractOAuthService implements OAuthService {
         } catch (IOException e) {
             throw new GatewayException("start oauth process failed");
         }
-        
         EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user,this.supportedOAuthType(),state,callback));
+        return state;
     }
 
 }
