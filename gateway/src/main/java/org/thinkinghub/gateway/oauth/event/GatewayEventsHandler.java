@@ -3,6 +3,9 @@ package org.thinkinghub.gateway.oauth.event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thinkinghub.gateway.oauth.bean.ErrorResponse;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
@@ -36,6 +39,7 @@ public class GatewayEventsHandler {
 		log.info("(if your curious it looks like this: " + accessToken + ", 'rawResponse'='"
 				+ accessToken.getRawResponse() + "')");
 
+
 	}
 
 	@EventListener
@@ -49,12 +53,18 @@ public class GatewayEventsHandler {
 		authenticationHistoryRepository.save(ah);
 	}
 
-	@EventListener
-	public void onOAuthProcessFinished(OAuthProcessFinishedEvent event) {
-		AuthenticationHistory ah = authenticationHistoryRepository.findByState(event.getState());
-		GatewayResponse response = event.getResponse();
-		logAuthHistory(ah, response);
-	}
+    @EventListener
+    public void onOAuthProviderCallbackReceived(OAuthProviderCallbackReceivedEvent event) {
+        ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        sra.setAttribute("service", event.getService(), RequestAttributes.SCOPE_REQUEST);
+    }
+    
+    @EventListener
+    public void onOAuthProcessFinished(OAuthProcessFinishedEvent event) {
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(event.getState());
+        GatewayResponse response = event.getResponse();
+        logAuthHistory(ah, response);
+    }
 
 	@EventListener
 	public void onOAuthProcessError(OAuthProcessErrorEvent event) {

@@ -22,7 +22,8 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 			} else {
 				String errorCode = JsonUtil.getValue(jsonBody, getErrorCodeFieldName());
 				String errorDesc = JsonUtil.getValue(jsonBody, getErrorDescFieldName());
-				return new GatewayResponse(errorCode, errorDesc, getServiceType(), response.getBody());
+				//TODO throw exception
+				return null;
 			}
 		} catch (IOException e) {
 			throw new GatewayException("can't extract data from response " + response, e);
