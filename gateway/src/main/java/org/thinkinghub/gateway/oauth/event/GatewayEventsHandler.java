@@ -8,7 +8,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
-import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
@@ -30,9 +29,6 @@ public class GatewayEventsHandler {
 
     @EventListener
     public void onAccessTokenRetrived(AccessTokenRetrievedEvent event) {
-
-        AuthenticationHistory ah = authenticationHistoryRepository.findByState(event.getState());
-        ah.setServiceStatus(ServiceStatus.SUCCESS);
 
         OAuth2AccessToken accessToken = event.getToken();
         log.info("Got the Access Token!");
