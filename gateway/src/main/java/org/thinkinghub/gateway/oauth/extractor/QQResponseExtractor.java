@@ -3,7 +3,6 @@ package org.thinkinghub.gateway.oauth.extractor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Component;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
 
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.Response;
 
-@Component("QQ")
 public class QQResponseExtractor extends BaseResponseExtractor {
 	public String getUserIdFieldName() {
 		return null;

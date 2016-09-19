@@ -7,9 +7,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.QQApi;
+import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.config.QQConfig;
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
+import org.thinkinghub.gateway.oauth.registry.EventPublisher;
+import org.thinkinghub.gateway.oauth.registry.ExtractorRegistry;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -29,22 +32,19 @@ public class QQService extends AbstractOAuthService {
     @Autowired
     private QQConfig qqConfig;
 
-    @Autowired
-    ResultHandlingService resultHandlingService;
-
     @PostConstruct
     public void initialize() {
         log.info(qqConfig.toString());
     }
 
-    protected OAuth20Service getOAuthService(String state) {
+    protected OAuth20Service getOAuthServiceProvider(String state) {
         OAuth20Service service = new ServiceBuilder().apiKey(qqConfig.getApiKey()).apiSecret(qqConfig.getApiSecret())
                 .callback(qqConfig.getCallback()).state(state).build(QQApi.instance());
         return service;
     }
 
     @Override
-    String getUserInfoUrl() {
+    protected String getUserInfoUrl() {
         return "https://graph.qq.com/user/get_user_info";
     }
 
@@ -63,19 +63,26 @@ public class QQService extends AbstractOAuthService {
     }
 
     @Override
-    public Response getResponse(String state, String code) {
-        OAuth20Service service = getOAuthService(state);
+    public GatewayResponse authenticated(String state, String code) {
+        OAuth20Service service = getOAuthServiceProvider(state);
         OAuth2AccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
         String openId = getOpenId(accessToken, service);
-        EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
-
-        // send request to get user info
+        EventPublisher.instance().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
         final OAuthRequest request = new OAuthRequest(Verb.GET,
                 getUserInfoUrl() + "?oauth_consumer_key=" + qqConfig.getApiKey() + "&openid=" + openId, service);
         service.signRequest(accessToken, request);
         Response response = request.send();
+        return parseUserInfoResponse(response);
+    }
 
-        return response;
+    @Override
+    protected GatewayResponse parseUserInfoResponse(Response response) {
+        return ExtractorRegistry.getExtractor(ServiceType.QQ).extract(response);
+    }
+
+    @Override
+    public ServiceType supportedOAuthType() {
+        return ServiceType.QQ;
     }
 }
