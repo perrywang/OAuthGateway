@@ -55,7 +55,6 @@ public class GatewayEventsHandler {
     @EventListener
     public void onOAuthProviderCallbackReceived(OAuthProviderCallbackReceivedEvent event) {
         ServletRequestAttributes sra = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
-        sra.setAttribute("state", event.getState(), RequestAttributes.SCOPE_REQUEST);
         sra.setAttribute("service", event.getService(), RequestAttributes.SCOPE_REQUEST);
     }
     
