@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
+import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
 import org.thinkinghub.gateway.oauth.exception.OAuthProcessingException;
 import org.thinkinghub.gateway.oauth.registry.EventPublisherRegistry;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
@@ -14,6 +16,7 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Data
 @Slf4j
@@ -47,6 +50,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     public Response getResponse(String state, String code) {
         OAuth20Service service = getOAuthService(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
+        checkToken(accessToken);
         setAccessToken(accessToken);
         EventPublisherRegistry.instance().getEventPublisher().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
 
@@ -59,5 +63,11 @@ public abstract class AbstractOAuthService implements OAuthService {
         return response;
     }
 
+    protected void checkToken(OAuth2AccessToken accessToken){
+        if(accessToken.equals("error")){
+            //TODO exception handling required?
+            throw new BadAccessTokenException("can not get correct access token");
+        }
+    }
 
 }

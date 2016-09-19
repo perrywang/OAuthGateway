@@ -13,8 +13,6 @@ import javax.annotation.PostConstruct;
 @Service
 @Slf4j
 public class GitHubService extends AbstractOAuthService {
-    private final String GET_USER_INFO_URL = "https://api.github.com/user";
-
     @Autowired
     private GitHubConfig gitHubConfig;
 

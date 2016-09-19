@@ -1,7 +1,11 @@
 package org.thinkinghub.gateway.api;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.extractors.TokenExtractor;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Verb;
+import org.thinkinghub.gateway.core.extractors.FacebookOAuth2AccessTokenExtractor;
+import org.thinkinghub.gateway.core.extractors.GitHubOAuth2AccessTokenExtractor;
 
 public class FacebookApi extends DefaultApi20 {
     protected FacebookApi() {
@@ -23,7 +27,7 @@ public class FacebookApi extends DefaultApi20 {
 
     @Override
     public String getAccessTokenEndpoint() {
-        return "https://graph.facebook.com/v2.6/oauth/access_token";
+        return "https://graph.facebook.com/v2.7/oauth/access_token";
     }
 
     @Override
@@ -33,6 +37,11 @@ public class FacebookApi extends DefaultApi20 {
 
     @Override
     protected String getAuthorizationBaseUrl() {
-        return "https://www.facebook.com/v2.6/dialog/oauth";
+        return "https://www.facebook.com/v2.7/dialog/oauth";
+    }
+
+    @Override
+    public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
+        return FacebookOAuth2AccessTokenExtractor.instance();
     }
 }

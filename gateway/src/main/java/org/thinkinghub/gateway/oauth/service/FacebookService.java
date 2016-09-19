@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 @Service
 @Slf4j
 public class FacebookService extends AbstractOAuthService {
-
     @Autowired
     private FacebookConfig facebookConfig;
 
@@ -32,6 +31,6 @@ public class FacebookService extends AbstractOAuthService {
     }
 
     String getUserInfoUrl() {
-        return "https://graph.facebook.com/me";
+        return "https://graph.facebook.com/" + facebookConfig.getApiVersion() + "/me";
     }
 }

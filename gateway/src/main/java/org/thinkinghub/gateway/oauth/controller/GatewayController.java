@@ -18,10 +18,8 @@ import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.StartingRetriveAccessTokenEvent;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
-import org.thinkinghub.gateway.oauth.registry.LocaleMessageSourceRegistry;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
@@ -119,6 +117,16 @@ public class GatewayController {
         AbstractOAuthService gitHubService = ServiceRegistry.instance().getService(ServiceType.GITHUB);
         Response userInfoResponse = gitHubService.getResponse(state, code);
         String redirectUrl = handleResponse(request, userInfoResponse, ServiceType.GITHUB, state);
+
+        redirect(response, redirectUrl);
+    }
+
+    @RequestMapping(value = "/oauth/facebook", method = RequestMethod.GET)
+    public void requestFacebookAccessToken(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestParam("code") String code, @RequestParam("state") String state) {
+        AbstractOAuthService facebookService = ServiceRegistry.instance().getService(ServiceType.FACEBOOK);
+        Response userInfoResponse = facebookService.getResponse(state, code);
+        String redirectUrl = handleResponse(request, userInfoResponse, ServiceType.FACEBOOK, state);
 
         redirect(response, redirectUrl);
     }

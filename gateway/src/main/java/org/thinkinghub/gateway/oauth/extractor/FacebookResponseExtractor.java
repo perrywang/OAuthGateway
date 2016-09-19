@@ -12,12 +12,12 @@ public class FacebookResponseExtractor extends BaseResponseExtractor {
 
     @Override
     String getUserIdFieldName() {
-        return null;
+        return "id";
     }
 
     @Override
     String getNickNameFieldName() {
-        return null;
+        return "name";
     }
 
     @Override

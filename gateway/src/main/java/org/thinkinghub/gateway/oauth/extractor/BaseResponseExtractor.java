@@ -14,9 +14,10 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 		try {
 			String jsonBody = response.getBody();
 			if (isSuccessful(response)) {
-				String userId = getUserId(response);
+				String userId = JsonUtil.getValue(jsonBody, getUserIdFieldName());
 				String nickName = JsonUtil.getValue(jsonBody, getNickNameFieldName());
-				String headImageUrl = JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName());
+				String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName()) : "";
+
 				return new RetBean(userId, nickName, headImageUrl, getServiceType(), response.getBody());
 			} else {
 				String errorCode = JsonUtil.getValue(jsonBody, getErrorCodeFieldName());
@@ -24,7 +25,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
 				return new RetBean(errorCode, errorDesc, getServiceType(), response.getBody());
 			}
 		} catch (IOException e) {
-			throw new GatewayException("GW000006", e);
+			throw new GatewayException("can't extract data from response " + response, e);
 		}
 	}
 
