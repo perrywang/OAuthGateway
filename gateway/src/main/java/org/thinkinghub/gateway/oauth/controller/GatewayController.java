@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
-import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
@@ -29,18 +27,15 @@ import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 public class GatewayController {
     
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
-    
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private AuthenticationHistoryRepository authenticationHistoryRepository;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
-    public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
-                      @RequestParam(value = "key", required = false) String key,
-                      @RequestParam(value = "service", required = false) ServiceType service) {
+    public void route(@RequestParam(value = "callbackUrl") String callbackUrl,
+                      @RequestParam(value = "key") String key,
+                      @RequestParam(value = "service") ServiceType service) {
         User user = userRepository.findByKey(key);
         if (user != null) {
             OAuthService oauthService = ServiceRegistry.getService(service);
@@ -64,7 +59,6 @@ public class GatewayController {
         } catch (IOException e) {
             throw new GatewayException("error when redirect to user callback page");
         }
-        eventPublisher.publishEvent(new OAuthProcessFinishedEvent(gatewayResponse,state));
     }
 
 

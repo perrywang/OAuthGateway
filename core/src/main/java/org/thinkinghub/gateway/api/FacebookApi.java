@@ -1,11 +1,11 @@
 package org.thinkinghub.gateway.api;
 
+import org.thinkinghub.gateway.core.extractors.FacebookOAuth2AccessTokenExtractor;
+
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Verb;
-import org.thinkinghub.gateway.core.extractors.FacebookOAuth2AccessTokenExtractor;
-import org.thinkinghub.gateway.core.extractors.GitHubOAuth2AccessTokenExtractor;
 
 public class FacebookApi extends DefaultApi20 {
     protected FacebookApi() {

@@ -9,7 +9,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.User;
-import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
+import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
 import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
@@ -76,8 +76,9 @@ public abstract class AbstractOAuthService implements OAuthService {
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
-        EventPublisher.instance().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
-        return retriveUserInfo(accessToken,service);
+        GatewayResponse gatewayResponse = retriveUserInfo(accessToken,service);
+        EventPublisher.instance().publishEvent(new OAuthProcessFinishedEvent(gatewayResponse, state));
+        return gatewayResponse;
     }
 
     @Override
@@ -89,8 +90,9 @@ public abstract class AbstractOAuthService implements OAuthService {
             response.sendRedirect(getAuthorizationUrl(state));
         } catch (IOException e) {
             throw new GatewayException("start oauth process failed");
-        } 
-        EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user,this.supportedOAuthType(),state, callback));
+        }
+        
+        EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user,this.supportedOAuthType(),state,callback));
     }
 
 }
