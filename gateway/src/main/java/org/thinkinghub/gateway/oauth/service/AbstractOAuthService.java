@@ -12,11 +12,13 @@ import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
-import org.thinkinghub.gateway.oauth.exception.*;
+import org.thinkinghub.gateway.oauth.exception.AccessTokenEmptyException;
+import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
+import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
+import org.thinkinghub.gateway.oauth.exception.UserIdEmptyException;
 import org.thinkinghub.gateway.oauth.registry.EventPublisher;
 import org.thinkinghub.gateway.util.IDGenerator;
 
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;

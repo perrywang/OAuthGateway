@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
 import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
 import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;

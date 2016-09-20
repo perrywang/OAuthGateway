@@ -1,12 +1,11 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
-import org.thinkinghub.gateway.oauth.exception.QQUserIdRetrievingException;
-import org.thinkinghub.gateway.oauth.util.JsonUtil;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.exception.QQUserIdRetrievingException;
+import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
 public class QQResponseExtractor extends BaseResponseExtractor {
     public String getUserIdFieldName() {
