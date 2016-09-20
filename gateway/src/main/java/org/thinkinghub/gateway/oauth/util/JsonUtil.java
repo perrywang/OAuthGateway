@@ -3,9 +3,12 @@ package org.thinkinghub.gateway.oauth.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.thinkinghub.gateway.oauth.exception.JsonParsingException;
 
 import java.io.IOException;
 
+@Slf4j
 public class JsonUtil {
     public static String toJson(Object obj) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -13,13 +16,14 @@ public class JsonUtil {
             String json = objectMapper.writeValueAsString(obj);
             return json;
         } catch (JsonProcessingException e) {
-            throw new org.thinkinghub.gateway.oauth.exception.JsonProcessingException("Exception is thrown when converting object "
-                    + obj.toString() + " to Json", e);
+            log.error("Exception is thrown when converting object " + obj.toString() + " to Json", e);
+            throw new JsonParsingException();
         }
     }
 
     /**
-     * return value per the name
+     * Retrieve value per the name
+     *
      * @param json
      * @param name
      * @return null if the name doesn't exist
@@ -30,8 +34,8 @@ public class JsonUtil {
         try {
             rootNode = mapper.readTree(json);
         } catch (IOException e) {
-            throw new org.thinkinghub.gateway.oauth.exception.JsonProcessingException("Exception is thrown when getting "
-                    + name + " from " + json, e);
+            log.error("Exception is thrown when retrieving " + name + " from " + json, e);
+            throw new JsonParsingException();
         }
         return rootNode.get(name).asText();
     }

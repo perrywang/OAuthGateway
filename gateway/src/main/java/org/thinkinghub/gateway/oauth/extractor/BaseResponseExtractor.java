@@ -19,7 +19,7 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
             throw new UserInfoJsonRetrievingException(e);
         }
         if (isSuccessful(response)) {
-            //here not need to check if there is no any value for userId as the check will be postponed in service
+            //here not need to check if userId is valid as the check will be postponed to do in service later
             String userId = getUserId(jsonBody) != null ? getUserId(jsonBody) : JsonUtil.getValue(jsonBody, getUserIdFieldName());
             String nickName = JsonUtil.getValue(jsonBody, getNickNameFieldName());
             String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName()) : "";
@@ -36,9 +36,9 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
         return response.isSuccessful();
     }
 
-    //In some scenarios the user id is not returned with access token like QQ
+    //In some scenarios the user id is not returned when getting access token like QQ
     //it is ok to send a request with a valid access token, but it would be better if the user id can be extracted from
-    //another variable like figureUrl in QQ.
+    //another variable like figureUrl in QQ response of access token.
     //this method should be overridden only for special cases
     String getUserId(String response) {
         return null;
