@@ -6,9 +6,6 @@ public class UserNotFoundException extends GatewayException {
 
     public UserNotFoundException() {
     }
-    public UserNotFoundException(String message) {
-        super(message);
-    }
     public String getGWErrorCode(){
         return "GW10004";
     }

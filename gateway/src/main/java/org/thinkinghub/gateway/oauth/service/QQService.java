@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.QQApi;
+import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.config.QQConfig;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
@@ -65,7 +66,7 @@ public class QQService extends AbstractOAuthService {
     @Override
     public GatewayResponse authenticated(String state, String code) {
         OAuth20Service service = getOAuthServiceProvider(state);
-        OAuth2AccessToken accessToken = getAccessToken(state, code);
+        GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
         String openId = getOpenId(accessToken, service);
         EventPublisher.instance().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));

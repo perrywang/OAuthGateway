@@ -1,54 +1,47 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
+import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.exception.QQUserIdRetrievingException;
+import org.thinkinghub.gateway.oauth.util.JsonUtil;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.core.model.Response;
-
 public class QQResponseExtractor extends BaseResponseExtractor {
-	public String getUserIdFieldName() {
-		return null;
-	}
+    public String getUserIdFieldName() {
+        return null;
+    }
 
-	public String getUserId(Response response) {
-		try {
-			ObjectMapper om = new ObjectMapper();
-			JsonNode root = om.readTree(response.getBody());
-			String figureurl = root.get("figureurl").asText();
-			figureurl.matches("[0-9A-Z]{32}");
-			final Matcher matcher = Pattern.compile("[0-9A-Z]{32}").matcher(figureurl);
-			if (matcher.find()) {
-				return matcher.group(0);
-			}
-		} catch (Exception e) {
-			throw new GatewayException("GW008", e);
-		}
-		throw new GatewayException("GW009");
-	}
+    @Override
+    public String getUserId(String response) {
+        String figureUrl = JsonUtil.getValue(response, "figureurl");
+        figureUrl.matches("[0-9A-Z]{32}");
+        final Matcher matcher = Pattern.compile("[0-9A-Z]{32}").matcher(figureUrl);
+        if (matcher.find()) {
+            return matcher.group(0);
+        }
+        throw new QQUserIdRetrievingException();
+    }
 
-	public String getNickNameFieldName() {
-		return "nickname";
-	}
+    public String getNickNameFieldName() {
+        return "nickname";
+    }
 
-	public String getHeadImageUrlFieldName() {
-		return "figureurl";
-	}
+    public String getHeadImageUrlFieldName() {
+        return "figureurl";
+    }
 
-	public String getErrorCodeFieldName() {
-		return "ret";
-	}
+    public String getErrorCodeFieldName() {
+        return "ret";
+    }
 
-	public String getErrorDescFieldName() {
-		return "msg";
-	}
+    public String getErrorDescFieldName() {
+        return "msg";
+    }
 
-	public ServiceType getServiceType() {
-		return ServiceType.QQ;
-	}
+    public ServiceType getServiceType() {
+        return ServiceType.QQ;
+    }
 
 }

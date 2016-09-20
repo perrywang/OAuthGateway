@@ -1,49 +1,59 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import java.io.IOException;
-
+import com.github.scribejava.core.model.Response;
 import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.exception.BadOAuthUserInfoException;
+import org.thinkinghub.gateway.oauth.exception.UserInfoJsonRetrievingException;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 
-import com.github.scribejava.core.model.Response;
+import java.io.IOException;
 
 public abstract class BaseResponseExtractor implements ResponseExtractor {
-	public GatewayResponse extract(Response response) {
-		try {
-			String jsonBody = response.getBody();
-			if (isSuccessful(response)) {
-				String userId = JsonUtil.getValue(jsonBody, getUserIdFieldName());
-				String nickName = JsonUtil.getValue(jsonBody, getNickNameFieldName());
-				String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName()) : "";
 
-				return new GatewayResponse(userId, nickName, headImageUrl, getServiceType(), response.getBody());
-			} else {
-				String errorCode = JsonUtil.getValue(jsonBody, getErrorCodeFieldName());
-				String errorDesc = JsonUtil.getValue(jsonBody, getErrorDescFieldName());
-				//TODO throw exception
-				return null;
-			}
-		} catch (IOException e) {
-			throw new GatewayException("can't extract data from response " + response, e);
-		}
-	}
+    public GatewayResponse extract(Response response) {
+        String jsonBody;
+        try {
+            jsonBody = response.getBody();
+        } catch (IOException e) {
+            throw new UserInfoJsonRetrievingException(e);
+        }
+        if (isSuccessful(response)) {
+            //here not need to check if there is no any value for userId as the check will be postponed in service
+            String userId = getUserId(jsonBody) != null ? getUserId(jsonBody) : JsonUtil.getValue(jsonBody, getUserIdFieldName());
+            String nickName = JsonUtil.getValue(jsonBody, getNickNameFieldName());
+            String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName()) : "";
 
-	protected boolean isSuccessful(Response response) {
-		return response.isSuccessful();
-	}
+            return new GatewayResponse(userId, nickName, headImageUrl, getServiceType(), jsonBody);
+        } else {
+            String errorCode = JsonUtil.getValue(jsonBody, getErrorCodeFieldName());
+            String errorDesc = JsonUtil.getValue(jsonBody, getErrorDescFieldName());
+            throw new BadOAuthUserInfoException(errorCode, errorDesc);
+        }
+    }
 
-	abstract ServiceType getServiceType();
+    protected boolean isSuccessful(Response response) {
+        return response.isSuccessful();
+    }
 
-	abstract String getUserIdFieldName();
+    //In some scenarios the user id is not returned with access token like QQ
+    //it is ok to send a request with a valid access token, but it would be better if the user id can be extracted from
+    //another variable like figureUrl in QQ.
+    //this method should be overridden only for special cases
+    String getUserId(String response) {
+        return null;
+    }
 
-	abstract String getNickNameFieldName();
+    abstract ServiceType getServiceType();
 
-	abstract String getHeadImageUrlFieldName();
+    abstract String getUserIdFieldName();
 
-	abstract String getErrorCodeFieldName();
+    abstract String getNickNameFieldName();
 
-	abstract String getErrorDescFieldName();
+    abstract String getHeadImageUrlFieldName();
+
+    abstract String getErrorCodeFieldName();
+
+    abstract String getErrorDescFieldName();
 
 }
