@@ -14,7 +14,7 @@ import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
-import org.thinkinghub.gateway.oauth.exception.UserNotFoundException;
+import org.thinkinghub.gateway.oauth.exception.GWUserNotFoundException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.repository.UserRepository;
@@ -41,7 +41,7 @@ public class GatewayController {
             OAuthService oauthService = ServiceRegistry.getService(service);
             oauthService.authenticate(user, callbackUrl);
         } else {
-            throw new UserNotFoundException();
+            throw new GWUserNotFoundException();
         }
     }
 
@@ -56,7 +56,7 @@ public class GatewayController {
         try {
             response.sendRedirect(generateRedirectUrl(gatewayResponse, matchedCallback));
         } catch (IOException e) {
-            throw new RedirectUrlException();
+            throw new RedirectUrlException(e);
         }
     }
 

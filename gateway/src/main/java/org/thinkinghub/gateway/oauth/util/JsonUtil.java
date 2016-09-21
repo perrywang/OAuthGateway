@@ -17,7 +17,7 @@ public class JsonUtil {
             return json;
         } catch (JsonProcessingException e) {
             log.error("Exception is thrown when converting object " + obj.toString() + " to Json", e);
-            throw new JsonParsingException();
+            throw new JsonParsingException(e);
         }
     }
 
@@ -35,7 +35,7 @@ public class JsonUtil {
             rootNode = mapper.readTree(json);
         } catch (IOException e) {
             log.error("Exception is thrown when retrieving " + name + " from " + json, e);
-            throw new JsonParsingException();
+            throw new JsonParsingException(e);
         }
         return rootNode.get(name).asText();
     }

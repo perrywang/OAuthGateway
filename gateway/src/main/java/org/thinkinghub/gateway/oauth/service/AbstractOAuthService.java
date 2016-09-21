@@ -99,7 +99,7 @@ public abstract class AbstractOAuthService implements OAuthService {
         try {
             response.sendRedirect(getAuthorizationUrl(state));
         } catch (IOException e) {
-            throw new RedirectUrlException();
+            throw new RedirectUrlException(e);
         }
         EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user, this.supportedOAuthType(), state, callback));
         return state;
