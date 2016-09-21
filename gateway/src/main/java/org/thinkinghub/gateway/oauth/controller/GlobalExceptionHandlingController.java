@@ -67,7 +67,7 @@ public class GlobalExceptionHandlingController {
                              HttpServletResponse response, Exception exception) {
         log.error("Request " + request.getRequestURL() + " raised " + exception);
         AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-        String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW999");
+        String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW99999");
         redirect(response, redirectUrl);
     }
 
