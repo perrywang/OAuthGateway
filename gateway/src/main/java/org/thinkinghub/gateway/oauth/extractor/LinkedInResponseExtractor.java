@@ -10,12 +10,12 @@ public class LinkedInResponseExtractor extends BaseResponseExtractor  {
 
     @Override
     String getUserIdFieldName() {
-        return null;
+        return "id";
     }
 
     @Override
     String getNickNameFieldName() {
-        return null;
+        return "firstName";
     }
 
     @Override
@@ -25,11 +25,11 @@ public class LinkedInResponseExtractor extends BaseResponseExtractor  {
 
     @Override
     String getErrorCodeFieldName() {
-        return null;
+        return "errorCode";
     }
 
     @Override
     String getErrorDescFieldName() {
-        return null;
+        return "message";
     }
 }

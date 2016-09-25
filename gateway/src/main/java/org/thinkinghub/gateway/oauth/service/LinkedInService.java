@@ -35,7 +35,7 @@ public class LinkedInService extends AbstractOAuthService {
 
     @Override
     protected String getUserInfoUrl() {
-        return null;
+        return "https://api.linkedin.com/v1/people/~?format=json";
     }
 
     @Override
