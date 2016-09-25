@@ -1,7 +1,7 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
 import com.github.scribejava.core.model.Response;
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.BadOAuthUserInfoException;
 import org.thinkinghub.gateway.oauth.exception.UserInfoJsonRetrievingException;

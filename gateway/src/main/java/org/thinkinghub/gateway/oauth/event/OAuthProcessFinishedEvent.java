@@ -1,6 +1,6 @@
 package org.thinkinghub.gateway.oauth.event;
 
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

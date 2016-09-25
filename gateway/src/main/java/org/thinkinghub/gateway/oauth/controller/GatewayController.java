@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
@@ -35,10 +35,10 @@ public class GatewayController {
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value = "callbackUrl") String callbackUrl,
                       @RequestParam(value = "key") String key,
-                      @RequestParam(value = "service") ServiceType service) {
+                      @RequestParam(value = "service") String service) {
         User user = userRepository.findByKey(key);
         if (user != null) {
-            OAuthService oauthService = ServiceRegistry.getService(service);
+            OAuthService oauthService = ServiceRegistry.getService(ServiceType.valueOf(service.toUpperCase()));
             oauthService.authenticate(user, callbackUrl);
         } else {
             throw new GWUserNotFoundException();

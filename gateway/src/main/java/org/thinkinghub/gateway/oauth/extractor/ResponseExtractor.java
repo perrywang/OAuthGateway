@@ -1,6 +1,6 @@
 package org.thinkinghub.gateway.oauth.extractor;
 
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 
 import com.github.scribejava.core.model.Response;
 

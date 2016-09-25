@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
@@ -80,8 +80,8 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public GatewayResponse authenticated(String state, String code) {
-        EventPublisher.instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(), state));
+    public GatewayResponse authenticated(String code, String state){
+        EventPublisher .instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(), state));
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);

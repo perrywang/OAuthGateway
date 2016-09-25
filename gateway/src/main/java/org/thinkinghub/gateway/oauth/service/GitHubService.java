@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.GitHubApi;
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.config.GitHubConfig;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.registry.ExtractorRegistry;
@@ -23,7 +23,7 @@ public class GitHubService extends AbstractOAuthService {
     private GitHubConfig gitHubConfig;
 
     @PostConstruct
-    public void initilize() {
+    public void initialize() {
         log.info(gitHubConfig.toString());
     }
 

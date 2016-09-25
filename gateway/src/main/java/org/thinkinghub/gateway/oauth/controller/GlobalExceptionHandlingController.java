@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.thinkinghub.gateway.oauth.bean.ErrorResponse;
+import org.thinkinghub.gateway.oauth.response.ErrorResponse;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessErrorEvent;
