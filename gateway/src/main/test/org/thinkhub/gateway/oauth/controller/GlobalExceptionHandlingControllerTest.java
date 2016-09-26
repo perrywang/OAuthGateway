@@ -1,6 +1,8 @@
 package org.thinkhub.gateway.oauth.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +47,9 @@ public class GlobalExceptionHandlingControllerTest extends AbstractJUnit4SpringC
     
 	@Test(expected = GatewayException.class)
 	public void gatewayError_GWUserNotFoundException_WhenGatewayExceptionReceived() throws Exception{
-		mockMvc.perform(get("/oauthgateway").param("key", "123").param("state", "123456").param("service", "WEIBO"));
+		mockMvc.perform(get("/oauthgateway").param("key", "123").param("service", "WEIBO"))
+//		.andDo(print());
+		.andExpect(status().isOk());
 	}
 	
 /*    @Test(expected = Exception.class)

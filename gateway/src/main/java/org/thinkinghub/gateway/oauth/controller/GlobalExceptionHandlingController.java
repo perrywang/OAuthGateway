@@ -6,18 +6,23 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.thinkinghub.gateway.oauth.response.ErrorResponse;
+import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessErrorEvent;
 import org.thinkinghub.gateway.oauth.exception.GatewayException;
+import org.thinkinghub.gateway.oauth.exception.MandatoryParameterMissingException;
 import org.thinkinghub.gateway.oauth.exception.OAuthProcessingException;
 import org.thinkinghub.gateway.oauth.registry.EventPublisher;
 import org.thinkinghub.gateway.oauth.registry.LocaleMessageSourceRegistry;
+import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
+import org.thinkinghub.gateway.oauth.response.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +32,9 @@ public class GlobalExceptionHandlingController {
 
     @Resource
     private LocaleMessageSourceRegistry localeMessageSourceService;
+    
+	@Autowired
+	private AuthenticationHistoryRepository authenticationHistoryRepository;
 
     @ExceptionHandler({OAuthProcessingException.class})
     public void oauthError(HttpServletRequest request, HttpServletResponse response, OAuthProcessingException exception) {
@@ -36,7 +44,8 @@ public class GlobalExceptionHandlingController {
                 LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrCode(),
                 exception.getErrMsg(), ErrorType.THIRDPARTY, ServiceType.valueOf((String)request.getParameter("service")));
         EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-        String redirectUrl = request.getParameter("callbackUrl") + "?error=" + err.toString();
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        String redirectUrl = ah.getCallback() + "?error=" + err.toString();
         redirect(response, redirectUrl);
     }
 
@@ -48,16 +57,26 @@ public class GlobalExceptionHandlingController {
                 LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()),
                 ErrorType.GATEWAY, ServiceType.valueOf((String)request.getParameter("service")));
         EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-        String redirectUrl = request.getParameter("callbackUrl") + "?error=" + exception.getGWErrorCode() + " - "
-                + LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode());
-        redirect(response, redirectUrl);
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+        if(ah != null){
+            String redirectUrl = ah.getCallback() + "?error=" + exception.getGWErrorCode() + " - "
+                    + LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode());
+            redirect(response, redirectUrl);
+        }
+    }
+    
+    @ExceptionHandler({MandatoryParameterMissingException.class})
+    public ResponseEntity<String> mandatoryParamError(HttpServletRequest request, HttpServletResponse response, MandatoryParameterMissingException exception) {
+        log.error("Request " + request.getRequestURL() + " raised " + exception);
+        return new ResponseEntity<String>(exception.toString(), HttpStatus.OK);
     }
 
     @ExceptionHandler({Exception.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public void defaultError(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         log.error("Request " + request.getRequestURL() + " raised " + exception);
-        String redirectUrl = request.getParameter("callbackUrl") + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW99999");
+        AuthenticationHistory ah = authenticationHistoryRepository.findByState(request.getParameter("state"));
+        String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW99999");
         redirect(response, redirectUrl);
     }
 

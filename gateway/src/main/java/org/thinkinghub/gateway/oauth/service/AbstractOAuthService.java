@@ -2,21 +2,19 @@ package org.thinkinghub.gateway.oauth.service;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
-import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
 import org.thinkinghub.gateway.oauth.exception.AccessTokenEmptyException;
 import org.thinkinghub.gateway.oauth.exception.BadAccessTokenException;
-import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
+import org.thinkinghub.gateway.oauth.exception.GWUserNotFoundException;
 import org.thinkinghub.gateway.oauth.exception.UserIdEmptyException;
 import org.thinkinghub.gateway.oauth.registry.EventPublisher;
+import org.thinkinghub.gateway.oauth.repository.UserRepository;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.util.IDGenerator;
 
 import com.github.scribejava.core.model.OAuthRequest;
@@ -30,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public abstract class AbstractOAuthService implements OAuthService {
+	
+	@Autowired
+	private UserRepository userRepository;
 
     protected abstract OAuth20Service getOAuthServiceProvider(String state);
 
@@ -92,17 +93,14 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public String authenticate(User user, String callback) {
+    public String authenticate(String key, String callback) {
+		User user = userRepository.findByKey(key);
+		if (user == null) {
+			throw new GWUserNotFoundException();
+		}
         String state = Long.toString(IDGenerator.nextId());
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletResponse response = sra.getResponse();
-        try {
-            response.sendRedirect(getAuthorizationUrl(state));
-        } catch (IOException e) {
-            throw new RedirectUrlException(e);
-        }
         EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user, this.supportedOAuthType(), state, callback));
-        return state;
+        return getAuthorizationUrl(state);
     }
 
 }

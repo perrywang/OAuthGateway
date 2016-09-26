@@ -85,12 +85,14 @@ public class GatewayEventsHandler {
 	}
 
 	private void logAuthHistory(AuthenticationHistory ah, ErrorResponse err) {
-		ah.setServiceStatus(ServiceStatus.FAILURE);
-		queueService.put(new QueuableTask() {
-			@Override
-			public void execute() {
-				authenticationHistoryRepository.save(ah);
-			}
-		});
+		if(ah != null){
+			ah.setServiceStatus(ServiceStatus.FAILURE);
+			queueService.put(new QueuableTask() {
+				@Override
+				public void execute() {
+					authenticationHistoryRepository.save(ah);
+				}
+			});
+		}
 	}
 }
