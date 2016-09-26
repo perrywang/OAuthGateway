@@ -1,8 +1,10 @@
 package org.thinkinghub.gateway.oauth.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
@@ -38,7 +40,9 @@ public class AuthenticationHistory extends GatewayPersistable {
     private String errorCode;
 
     private String errorDesc;
-
+    
+    @Column(name="rawResponse")
+    @Lob
     private String rawResponse;
 
 
