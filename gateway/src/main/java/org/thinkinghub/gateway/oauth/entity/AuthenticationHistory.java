@@ -37,6 +37,8 @@ public class AuthenticationHistory extends GatewayPersistable {
     @Enumerated(EnumType.STRING)
     private ServiceStatus serviceStatus;
 
+    private String gwErrorCode;
+
     private String errorCode;
 
     private String errorDesc;

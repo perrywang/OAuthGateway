@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.entity.User;
+import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
@@ -86,6 +87,7 @@ public abstract class AbstractOAuthService implements OAuthService {
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
+        EventPublisher.instance().publishEvent(new AccessTokenRetrievedEvent(state, accessToken));
         GatewayResponse gatewayResponse = retrieveUserInfo(accessToken, service);
         checkUserInfo(gatewayResponse);
         EventPublisher.instance().publishEvent(new OAuthProcessFinishedEvent(gatewayResponse, state));

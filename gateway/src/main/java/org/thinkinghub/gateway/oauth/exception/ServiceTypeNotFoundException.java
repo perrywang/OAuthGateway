@@ -1,8 +1,8 @@
 package org.thinkinghub.gateway.oauth.exception;
 
 @SuppressWarnings("serial")
-public class CallbackUrlMissingException extends MandatoryParameterMissingException {
+public class ServiceTypeNotFoundException extends GatewayException {
 	public String getErrorCode(){
-		return "GW10001";
+		return "GW10003";
 	}
 }
