@@ -25,11 +25,11 @@ public class FacebookResponseExtractor extends BaseResponseExtractor {
 
     @Override
     String getErrorCodeFieldName() {
-        return null;
+        return "code";
     }
 
     @Override
     String getErrorDescFieldName() {
-        return null;
+        return "message";
     }
 }
