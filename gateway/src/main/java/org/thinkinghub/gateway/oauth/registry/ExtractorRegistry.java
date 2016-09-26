@@ -2,12 +2,7 @@ package org.thinkinghub.gateway.oauth.registry;
 
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 import org.thinkinghub.gateway.oauth.exception.ServiceNotSupportedException;
-import org.thinkinghub.gateway.oauth.extractor.FacebookResponseExtractor;
-import org.thinkinghub.gateway.oauth.extractor.GitHubResponseExtractor;
-import org.thinkinghub.gateway.oauth.extractor.QQResponseExtractor;
-import org.thinkinghub.gateway.oauth.extractor.ResponseExtractor;
-import org.thinkinghub.gateway.oauth.extractor.WeiboResponseExtractor;
-import org.thinkinghub.gateway.oauth.extractor.WeixinResponseExtractor;
+import org.thinkinghub.gateway.oauth.extractor.*;
 
 public class ExtractorRegistry {
   
@@ -17,6 +12,7 @@ public class ExtractorRegistry {
         static final ResponseExtractor weixinRX = new WeixinResponseExtractor();
         static final ResponseExtractor githubRX = new GitHubResponseExtractor();
         static final ResponseExtractor facebookRX = new FacebookResponseExtractor();
+        static final ResponseExtractor linkedinRX = new LinkedInResponseExtractor();
     }
 
     public static ResponseExtractor getExtractor(ServiceType service) {
@@ -31,6 +27,8 @@ public class ExtractorRegistry {
                 return Extractors.githubRX;
             case FACEBOOK:
                 return Extractors.facebookRX;
+            case LINKEDIN:
+                return Extractors.linkedinRX;
         }
         
         throw new ServiceNotSupportedException(service.name());

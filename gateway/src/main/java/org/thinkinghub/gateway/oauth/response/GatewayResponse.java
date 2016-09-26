@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.oauth.bean;
+package org.thinkinghub.gateway.oauth.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;

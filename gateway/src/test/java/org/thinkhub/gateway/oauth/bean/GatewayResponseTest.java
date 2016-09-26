@@ -2,7 +2,7 @@ package org.thinkhub.gateway.oauth.bean;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.thinkinghub.gateway.oauth.bean.GatewayResponse;
+import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
 public class GatewayResponseTest {

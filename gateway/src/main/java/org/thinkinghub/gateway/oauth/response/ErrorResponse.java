@@ -1,4 +1,4 @@
-package org.thinkinghub.gateway.oauth.bean;
+package org.thinkinghub.gateway.oauth.response;
 
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;

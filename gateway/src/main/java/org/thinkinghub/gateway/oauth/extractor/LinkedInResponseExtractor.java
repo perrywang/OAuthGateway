@@ -2,10 +2,10 @@ package org.thinkinghub.gateway.oauth.extractor;
 
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
-public class FacebookResponseExtractor extends BaseResponseExtractor {
+public class LinkedInResponseExtractor extends BaseResponseExtractor  {
     @Override
     ServiceType getServiceType() {
-        return ServiceType.FACEBOOK;
+        return ServiceType.LINKEDIN;
     }
 
     @Override
@@ -15,7 +15,7 @@ public class FacebookResponseExtractor extends BaseResponseExtractor {
 
     @Override
     String getNickNameFieldName() {
-        return "name";
+        return "firstName";
     }
 
     @Override
@@ -25,7 +25,7 @@ public class FacebookResponseExtractor extends BaseResponseExtractor {
 
     @Override
     String getErrorCodeFieldName() {
-        return "code";
+        return "errorCode";
     }
 
     @Override
