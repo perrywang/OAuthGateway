@@ -33,9 +33,9 @@ public class GatewayController {
     private AuthenticationHistoryRepository authenticationHistoryRepository;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
-    public void route(@RequestParam(value = "callbackUrl") String callbackUrl,
-                      @RequestParam(value = "key") String key,
-                      @RequestParam(value = "service") ServiceType service) {
+    public void route(@RequestParam(value = "callbackUrl",required=false) String callbackUrl,
+                      @RequestParam(value = "key",required=false) String key,
+                      @RequestParam(value = "service",required=false) ServiceType service) {
         User user = userRepository.findByKey(key);
         if (user != null) {
             OAuthService oauthService = ServiceRegistry.getService(service);
