@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.exception.MandatoryParameterMissingException;
+import org.thinkinghub.gateway.oauth.exception.CallbackUrlMissingException;
+import org.thinkinghub.gateway.oauth.exception.IncorrectUrlFormatException;
+import org.thinkinghub.gateway.oauth.exception.KeyMissingException;
 import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
+import org.thinkinghub.gateway.oauth.exception.ServiceTypeMissingException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
 import org.thinkinghub.gateway.oauth.response.GatewayResponse;
@@ -20,24 +23,13 @@ import org.thinkinghub.gateway.oauth.service.OAuthService;
 import org.thinkinghub.gateway.oauth.util.Base64Encoder;
 import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
+import org.thinkinghub.gateway.oauth.util.RegExpUtil;
 
 @RestController
 public class GatewayController {
 
 	@Autowired
 	private AuthenticationHistoryRepository authenticationHistoryRepository;
-
-	private void preCheckParam(String callbackUrl, String key, String service) {
-		if (callbackUrl == null) {
-			throw new MandatoryParameterMissingException("GW10001","CallbackUrl is missing in your url");
-		}
-		if (key == null) {
-			throw new MandatoryParameterMissingException("GW10002","Key is missing in your url");
-		}
-		if (service == null) {
-			throw new MandatoryParameterMissingException("GW10003","Service is missing in your url");
-		}
-	}
 
 	@RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
 	public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
@@ -54,6 +46,21 @@ public class GatewayController {
         }
 	}
 
+	private void preCheckParam(String callbackUrl, String key, String service) {
+		if (callbackUrl == null) {
+			throw new CallbackUrlMissingException();
+		}
+		if (key == null) {
+			throw new KeyMissingException();
+		}
+		if (service == null) {
+			throw new ServiceTypeMissingException();
+		}
+		if (!RegExpUtil.isProperUrl(callbackUrl)){
+			throw new IncorrectUrlFormatException();
+		}
+	}
+	
 	@RequestMapping(value = "/oauth/{service}", method = RequestMethod.GET)
 	public void oauthProviderCallback(HttpServletResponse response, @RequestParam("code") String code,
 			@RequestParam("state") String state, @PathVariable String service) {

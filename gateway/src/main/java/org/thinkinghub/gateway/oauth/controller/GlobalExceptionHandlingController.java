@@ -30,62 +30,68 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandlingController {
 
-    @Resource
-    private LocaleMessageSourceRegistry localeMessageSourceService;
-    
+	@Resource
+	private LocaleMessageSourceRegistry localeMessageSourceService;
+
 	@Autowired
 	private AuthenticationHistoryRepository authenticationHistoryRepository;
 
-    @ExceptionHandler({OAuthProcessingException.class})
-    public void oauthError(HttpServletRequest request, HttpServletResponse response, OAuthProcessingException exception) {
-        log.error("Request " + request.getRequestURL() + " raised " + exception);
-        String state=request.getParameter("state");
-        ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
-                LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrCode(),
-                exception.getErrMsg(), ErrorType.THIRDPARTY, ServiceType.valueOf((String)request.getParameter("service")));
-        EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-        String redirectUrl = ah.getCallback() + "?error=" + err.toString();
-        redirect(response, redirectUrl);
-    }
+	@ExceptionHandler({ OAuthProcessingException.class })
+	public void oauthError(HttpServletRequest request, HttpServletResponse response,
+			OAuthProcessingException exception) {
+		log.error("Request " + request.getRequestURL() + " raised " + exception);
+		String state = request.getParameter("state");
+		ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
+				LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrCode(),
+				exception.getErrMsg(), ErrorType.THIRDPARTY,
+				ServiceType.valueOf((String) request.getParameter("service")));
+		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
+		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+		String redirectUrl = ah.getCallback() + "?error=" + err.toString();
+		redirect(response, redirectUrl);
+	}
 
-    @ExceptionHandler({GatewayException.class})
-    public void gatewayError(HttpServletRequest request, HttpServletResponse response, GatewayException exception) {
-        log.error("Request " + request.getRequestURL() + " raised " + exception);
-        String state=request.getParameter("state");
-        ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
-                LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()),
-                ErrorType.GATEWAY, ServiceType.valueOf((String)request.getParameter("service")));
-        EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
-        AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
-        if(ah != null){
-            String redirectUrl = ah.getCallback() + "?error=" + exception.getGWErrorCode() + " - "
-                    + LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode());
-            redirect(response, redirectUrl);
-        }
-    }
-    
-    @ExceptionHandler({MandatoryParameterMissingException.class})
-    public ResponseEntity<String> mandatoryParamError(HttpServletRequest request, HttpServletResponse response, MandatoryParameterMissingException exception) {
-        log.error("Request " + request.getRequestURL() + " raised " + exception);
-        return new ResponseEntity<String>(exception.toString(), HttpStatus.OK);
-    }
+	@ExceptionHandler({ GatewayException.class })
+	public void gatewayError(HttpServletRequest request, HttpServletResponse response, GatewayException exception) {
+		log.error("Request " + request.getRequestURL() + " raised " + exception);
+		String state = request.getParameter("state");
+		ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
+				LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), ErrorType.GATEWAY,
+				ServiceType.valueOf((String) request.getParameter("service")));
+		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
+		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+		if (ah != null) {
+			String redirectUrl = ah.getCallback() + "?errorCode=" + exception.getGWErrorCode() + "&errorMessage="
+					+ LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode());
+			redirect(response, redirectUrl);
+		}
+	}
 
-    @ExceptionHandler({Exception.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public void defaultError(HttpServletRequest request, HttpServletResponse response, Exception exception) {
-        log.error("Request " + request.getRequestURL() + " raised " + exception);
-        AuthenticationHistory ah = authenticationHistoryRepository.findByState(request.getParameter("state"));
-        String redirectUrl = ah.getCallback() + "?error=" + LocaleMessageSourceRegistry.instance().getMessage("GW99999");
-        redirect(response, redirectUrl);
-    }
+	@ExceptionHandler({ MandatoryParameterMissingException.class })
+	public ResponseEntity<String> mandatoryParamError(HttpServletRequest request, HttpServletResponse response,
+			MandatoryParameterMissingException exception) {
+		log.error("Request " + request.getRequestURL() + " raised " + exception);
+		String errStr = "errorCode=" + exception.getErrorCode() + "&errorMessage="
+				+ LocaleMessageSourceRegistry.instance().getMessage(exception.getErrorCode());
+		return new ResponseEntity<String>(errStr, HttpStatus.OK);
+	}
 
-    private void redirect(HttpServletResponse response, String redirectUrl) {
-        try {
-            response.sendRedirect(redirectUrl);
-        } catch (IOException e) {
-            log.error("Exception occurs when redirecting to the url: " + redirectUrl, e);
-        }
-    }
+	@ExceptionHandler({ Exception.class })
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public void defaultError(HttpServletRequest request, HttpServletResponse response, Exception exception) {
+		log.error("Request " + request.getRequestURL() + " raised " + exception);
+		AuthenticationHistory ah = authenticationHistoryRepository.findByState(request.getParameter("state"));
+		String redirectUrl = ah.getCallback() + "?error="
+				+ LocaleMessageSourceRegistry.instance().getMessage("GW99999");
+		redirect(response, redirectUrl);
+	}
+
+	private void redirect(HttpServletResponse response, String redirectUrl) {
+		try {
+			response.sendRedirect(redirectUrl);
+		} catch (IOException e) {
+			log.error("Exception occurs when redirecting to the url: " + redirectUrl, e);
+		}
+	}
 
 }

@@ -7,20 +7,16 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class MandatoryParameterMissingException extends RuntimeException{
-	private String errorCode;
-	private String message;
+	
+	public MandatoryParameterMissingException(){
+		super();
+	}
 	
 	public MandatoryParameterMissingException(String message){
 		super(message);
 	}
 	
-    public MandatoryParameterMissingException(String errorCode,String message) {
-        this.errorCode = errorCode;
-        this.message = message;
-    }
-    
-    @Override
-    public String toString(){
-    	return errorCode + " : " + message;
+    public String getErrorCode(){
+    	return "GW10001";
     }
 }

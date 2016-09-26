@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 @Data
 public class ErrorResponse {
 	String gwErrorCode;
-	String gwErrorMsg;
+	String gwErrorMessage;
 	String oauthErrorCode;
-	String oauthErrorMsg;
+	String oauthErrorMessage;
 	ErrorType errorType;
 	ServiceType serviceType;
 	
-	public ErrorResponse(String gwErrorCode, String gwErrorMsg, ErrorType errorType, ServiceType serviceType){
+	public ErrorResponse(String gwErrorCode, String gwErrorMessage, ErrorType errorType, ServiceType serviceType){
 		this.gwErrorCode = gwErrorCode;
-		this.gwErrorMsg = gwErrorMsg;
+		this.gwErrorMessage = gwErrorMessage;
 		this.errorType = errorType;
 		this.serviceType = serviceType;
 	}
@@ -30,9 +30,9 @@ public class ErrorResponse {
 		return "{\"retCode\":"+ 1
 				+","+"\"errorType\":"+ errorType
 				+","+"\"gwErrorCode\":"+ gwErrorCode 
-				+","+"\"gwErrorMsg\":\"" + gwErrorMsg
+				+","+"\"gwErrorMessage\":\"" + gwErrorMessage
     			+","+"\"oauthErrorCode\":\"" + oauthErrorCode
-    			+"\","+"\"oauthErrorMsg\":\"" + oauthErrorMsg
+    			+"\","+"\"oauthErrorMessage\":\"" + oauthErrorMessage
     			+"\"}";
 	}
 }
