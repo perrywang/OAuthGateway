@@ -14,7 +14,7 @@ public class QQResponseExtractor extends BaseResponseExtractor {
 
     @Override
     public String getUserId(String response) {
-        String figureUrl = JsonUtil.getValue(response, "figureurl");
+        String figureUrl = JsonUtil.getString(response, "figureurl");
         figureUrl.matches("[0-9A-Z]{32}");
         final Matcher matcher = Pattern.compile("[0-9A-Z]{32}").matcher(figureUrl);
         if (matcher.find()) {

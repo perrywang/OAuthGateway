@@ -20,14 +20,14 @@ public abstract class BaseResponseExtractor implements ResponseExtractor {
         }
         if (isSuccessful(response)) {
             //here not need to check if userId is valid as the check will be postponed to do in service later
-            String userId = getUserId(jsonBody) != null ? getUserId(jsonBody) : JsonUtil.getValue(jsonBody, getUserIdFieldName());
-            String nickName = JsonUtil.getValue(jsonBody, getNickNameFieldName());
-            String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getValue(jsonBody, getHeadImageUrlFieldName()) : "";
+            String userId = getUserId(jsonBody) != null ? getUserId(jsonBody) : JsonUtil.getString(jsonBody, getUserIdFieldName());
+            String nickName = JsonUtil.getString(jsonBody, getNickNameFieldName());
+            String headImageUrl = getHeadImageUrlFieldName() != null ? JsonUtil.getString(jsonBody, getHeadImageUrlFieldName()) : "";
 
             return new GatewayResponse(userId, nickName, headImageUrl, getServiceType(), jsonBody);
         } else {
-            String errorCode = JsonUtil.getValue(jsonBody, getErrorCodeFieldName());
-            String errorDesc = JsonUtil.getValue(jsonBody, getErrorDescFieldName());
+            String errorCode = JsonUtil.getString(jsonBody, getErrorCodeFieldName());
+            String errorDesc = JsonUtil.getString(jsonBody, getErrorDescFieldName());
             throw new BadOAuthUserInfoException(errorCode, errorDesc);
         }
     }

@@ -60,7 +60,7 @@ public class QQService extends AbstractOAuthService {
 
         }
         String formattedStr = rawResponse.substring(rawResponse.indexOf("{"), rawResponse.indexOf("}") + 1);
-        return JsonUtil.getValue("openid", formattedStr);
+        return JsonUtil.getString("openid", formattedStr);
     }
 
     @Override
