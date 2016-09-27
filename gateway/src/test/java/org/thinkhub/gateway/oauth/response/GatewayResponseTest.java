@@ -1,4 +1,4 @@
-package org.thinkhub.gateway.oauth.bean;
+package org.thinkhub.gateway.oauth.response;
 
 import org.junit.Before;
 import org.junit.Test;
