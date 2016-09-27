@@ -1,5 +1,5 @@
 <?php
-   if($_GET['error']) {
+   if($_GET['errorCode']) {
    		//process gateway error
    }else{
    	    if($_GET['userInfo']) {

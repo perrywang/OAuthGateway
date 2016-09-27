@@ -21,6 +21,6 @@ public class JavaServerExample {
     }
     
     private boolean hasError(HttpServletRequest request) {
-        return request.getParameter("error") != null;
+        return request.getParameter("errorCode") != null;
     }
 }
