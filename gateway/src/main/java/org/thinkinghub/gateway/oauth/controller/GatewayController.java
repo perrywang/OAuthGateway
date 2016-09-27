@@ -14,6 +14,7 @@ import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 import org.thinkinghub.gateway.util.RegexUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -54,10 +55,17 @@ public class GatewayController {
     }
 
     @RequestMapping(value = "/oauth/{service}", method = RequestMethod.GET)
-    public void oauthProviderCallback(@RequestParam("code") String code,
-                                      @RequestParam("state") String state,
-                                      @PathVariable String service,
-                                      HttpServletResponse response) {
+    public void oauthProviderCallback(@PathVariable String service,
+                                      HttpServletResponse response, HttpServletRequest request) {
+        if (service.equalsIgnoreCase(ServiceType.LINKEDIN.toString())) {
+            String errorCode = request.getParameter("error");
+            if (!StringUtils.isEmpty(errorCode)) {
+                String errorDesc = request.getParameter("error_description");
+                throw new LinkedInOAuthCancelException(errorCode, errorDesc);
+            }
+        }
+        String code = request.getParameter("code");
+        String state = request.getParameter("state");
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
         GatewayResponse gatewayResponse = oauthService.authenticated(code, state);
