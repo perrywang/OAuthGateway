@@ -1,25 +1,25 @@
 package org.thinkhub.gateway.oauth.util;
 
-import org.junit.Test;
-import org.thinkinghub.gateway.oauth.util.RegExpUtil;
 import org.junit.Assert;
+import org.junit.Test;
+import org.thinkinghub.gateway.util.RegexUtil;
 
-public class RegExpUtilTest {
+public class RegexUtilTest {
 	@Test
 	public void isProperUrl_TestWithHttp(){
 		String url = "http://abc.com.hk";
-		Assert.assertTrue(RegExpUtil.isProperUrl(url));
+		Assert.assertTrue(RegexUtil.isProperUrl(url));
 	}
 	
 	@Test
 	public void isProperUrl_TestWithHttps(){
 		String url = "https://abc.com.hk";
-		Assert.assertTrue(RegExpUtil.isProperUrl(url));
+		Assert.assertTrue(RegexUtil.isProperUrl(url));
 	}
 	
 	@Test
 	public void isProperUrl_TestWithNonUrl(){
 		String url = "httpsaaa://abc.com.hk-";
-		Assert.assertFalse(RegExpUtil.isProperUrl(url));
+		Assert.assertFalse(RegexUtil.isProperUrl(url));
 	}
 }
