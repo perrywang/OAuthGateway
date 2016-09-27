@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ErrorResponse {
+	//This GW error code represents in which process oauthgateway throws exception
 	String gwErrorCode;
 	String gwErrorMessage;
+	//This OAuth error code represents the original code from third-party
 	String oauthErrorCode;
 	String oauthErrorMessage;
 	ErrorType errorType;
