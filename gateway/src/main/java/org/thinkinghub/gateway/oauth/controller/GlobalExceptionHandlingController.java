@@ -35,14 +35,13 @@ public class GlobalExceptionHandlingController {
 			OAuthProcessingException exception) {
 		log.error("Request " + request.getRequestURL() + " raised " + exception);
 		String state = request.getParameter("state");
-		ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
-				LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrCode(),
-				exception.getErrMsg(), ErrorType.THIRDPARTY,
-				ServiceType.valueOf((String) request.getParameter("service")));
-		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
 		AuthenticationHistory ah = authenticationHistoryRepository.findByState(state);
+		ErrorResponse err = new ErrorResponse(exception.getGWErrorCode(),
+				LocaleMessageSourceRegistry.instance().getMessage(exception.getGWErrorCode()), exception.getErrorCode(),
+				exception.getErrorMessage(), ErrorType.THIRDPARTY,ah.getServiceType());
+		EventPublisher.instance().publishEvent(new OAuthProcessErrorEvent(err, state));
 		String redirectUrl = ah.getCallback() + "?errorCode=" + err.getGwErrorCode() + "&errorMessage="
-				+ LocaleMessageSourceRegistry.instance().getMessage(err.getGwErrorMessage()) + "&fullErrorMessage="
+				+ LocaleMessageSourceRegistry.instance().getMessage(err.getGwErrorCode()) + "&fullErrorMessage="
 				+ err.toString();
 		redirect(response, redirectUrl);
 	}

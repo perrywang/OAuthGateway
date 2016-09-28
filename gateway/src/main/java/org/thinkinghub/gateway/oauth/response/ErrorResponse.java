@@ -31,6 +31,7 @@ public class ErrorResponse {
 	public String toString(){
 		return "{\"retCode\":"+ 1
 				+","+"\"errorType\":"+ errorType
+    			+"\","+"\"serviceType\":\"" + serviceType
 				+","+"\"gwErrorCode\":"+ gwErrorCode 
 				+","+"\"gwErrorMessage\":\"" + gwErrorMessage
     			+","+"\"oauthErrorCode\":\"" + oauthErrorCode

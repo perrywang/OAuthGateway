@@ -76,6 +76,7 @@ public class GatewayEventsHandler {
 
     private void logAuthHistory(AuthenticationHistory ah, ErrorResponse err) {
         if (ah != null) {
+        	ah.setErrorType(err.getErrorType());
             ah.setGwErrorCode(err.getGwErrorCode());
             ah.setErrorCode(err.getOauthErrorCode());
             ah.setErrorDesc(err.getOauthErrorMessage());
