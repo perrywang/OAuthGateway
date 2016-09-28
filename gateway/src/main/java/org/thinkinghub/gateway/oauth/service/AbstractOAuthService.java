@@ -60,7 +60,7 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public void errorWhenAuthentication(ErrorResponse errorResponse, String state){
+    public void handleOAuthError(ErrorResponse errorResponse, String state){
     	throw new OAuthProcessingException(errorResponse.getOauthErrorCode(),errorResponse.getOauthErrorMessage());
     }
 

@@ -68,17 +68,17 @@ public class GatewayController {
     @RequestMapping(value = "/oauth/{service}", method = RequestMethod.GET)
     public void oauthProviderCallback(@PathVariable String service,
                                       HttpServletResponse response, HttpServletRequest request) {
-        String code = request.getParameter("code");
         String state = request.getParameter("state");
-        String errorId = request.getParameter("error");
+        checkState(state);
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
-        if(errorId != null){
-        	String errorCode = request.getParameter("error_code");
-        	String errorDescription = request.getParameter("error_description");
-        	ErrorResponse err = new ErrorResponse(null,null,errorCode,errorDescription,ErrorType.THIRDPARTY,serviceType);
-        	oauthService.errorWhenAuthentication(err,state);;
-        }else{
+        String errorCode = request.getParameter("error");
+        if (StringUtils.isEmpty(errorCode)) {
+            String errorDesc = request.getParameter("error_description");
+            ErrorResponse er = new ErrorResponse(null, null, errorCode, errorDesc, ErrorType.THIRDPARTY, serviceType);
+            oauthService.handleOAuthError(er, state);
+        } else {
+            String code = request.getParameter("code");
             GatewayResponse gatewayResponse = oauthService.authenticated(code, state);
             String matchedCallback = authenticationHistoryRepository.findByState(state).getCallback();
             try {
@@ -87,6 +87,10 @@ public class GatewayController {
                 throw new RedirectUrlException(e);
             }
         }
+    }
+
+    private boolean checkState(String state) {
+        return true;
     }
 
     private String generateRedirectUrl(GatewayResponse response, String callback) {

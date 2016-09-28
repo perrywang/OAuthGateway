@@ -12,6 +12,6 @@ public interface OAuthService {
     
     ServiceType supportedOAuthType();
     
-    void errorWhenAuthentication(ErrorResponse errorResponse, String state);
+    void handleOAuthError(ErrorResponse errorResponse, String state);
 
 }
