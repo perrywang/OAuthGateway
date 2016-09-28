@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 import org.thinkinghub.gateway.oauth.entity.User;
 import org.thinkinghub.gateway.oauth.event.AccessTokenRetrievedEvent;
-import org.thinkinghub.gateway.oauth.event.OAuthProcessErrorEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProcessFinishedEvent;
 import org.thinkinghub.gateway.oauth.event.OAuthProviderCallbackReceivedEvent;
 import org.thinkinghub.gateway.oauth.event.StartingOAuthProcessEvent;
