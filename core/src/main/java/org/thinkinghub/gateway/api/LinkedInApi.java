@@ -1,13 +1,13 @@
 package org.thinkinghub.gateway.api;
 
+import org.thinkinghub.gateway.core.extractors.LinkedInOAuth2AccessTokenExtractor;
+import org.thinkinghub.gateway.core.service.LinkedInOAuthService;
+
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.TokenExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import org.thinkinghub.gateway.core.extractors.GitHubOAuth2AccessTokenExtractor;
-import org.thinkinghub.gateway.core.extractors.LinkedInOAuth2AccessTokenExtractor;
-import org.thinkinghub.gateway.core.service.LinkedInOAuthService;
 
 public class LinkedInApi extends DefaultApi20{
     protected LinkedInApi() {
