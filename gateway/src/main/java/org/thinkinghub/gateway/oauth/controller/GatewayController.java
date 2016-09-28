@@ -73,7 +73,7 @@ public class GatewayController {
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
         String errorCode = request.getParameter("error");
-        if (StringUtils.isEmpty(errorCode)) {
+        if (!StringUtils.isEmpty(errorCode)) {
             String errorDesc = request.getParameter("error_description");
             ErrorResponse er = new ErrorResponse(null, null, errorCode, errorDesc, ErrorType.THIRDPARTY, serviceType);
             oauthService.handleOAuthError(er, state);
