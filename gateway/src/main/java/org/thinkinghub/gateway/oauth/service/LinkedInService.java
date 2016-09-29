@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import org.thinkinghub.gateway.api.LinkedInApi;
 import org.thinkinghub.gateway.oauth.config.LinkedInConfig;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
-import org.thinkinghub.gateway.oauth.exception.LinkedInOAuthCancelException;
-import org.thinkinghub.gateway.oauth.exception.OAuthProcessingException;
+import org.thinkinghub.gateway.oauth.exception.UserCancelOAuthException;
 import org.thinkinghub.gateway.oauth.registry.ExtractorRegistry;
 import org.thinkinghub.gateway.oauth.response.ErrorResponse;
 import org.thinkinghub.gateway.oauth.response.GatewayResponse;
@@ -54,7 +53,7 @@ public class LinkedInService extends AbstractOAuthService {
     public void handleOAuthError(ErrorResponse er, String state){
         if(er.getOauthErrorCode().equals("user_cancelled_login")
                 || er.getOauthErrorCode().equals("user_cancelled_authorize ")){
-            throw new LinkedInOAuthCancelException(er.getOauthErrorCode(), er.getOauthErrorMessage());
+            throw new UserCancelOAuthException(er.getOauthErrorCode(), er.getOauthErrorMessage());
         }
         super.handleOAuthError(er, state);
     }

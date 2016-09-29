@@ -1,7 +1,7 @@
 package org.thinkinghub.gateway.oauth.exception;
 
-public class LinkedInOAuthCancelException extends OAuthProcessingException{
-    public LinkedInOAuthCancelException(String errCode, String errMsg) {
+public class UserCancelOAuthException extends OAuthProcessingException{
+    public UserCancelOAuthException(String errCode, String errMsg) {
         super(errCode, errMsg);
     }
 
