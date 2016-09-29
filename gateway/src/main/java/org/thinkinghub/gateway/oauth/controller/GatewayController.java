@@ -72,10 +72,13 @@ public class GatewayController {
         checkState(state);
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
-        String errorCode = request.getParameter("error");
-        if (!StringUtils.isEmpty(errorCode)) {
+        String oauthError = request.getParameter("error");
+        if (!StringUtils.isEmpty(oauthError)) {
+            String errorCode = request.getParameter("error_code");
             String errorDesc = request.getParameter("error_description");
-            ErrorResponse er = new ErrorResponse(null, null, errorCode, errorDesc, ErrorType.THIRDPARTY, serviceType);
+            ErrorResponse er = new ErrorResponse().oauthError(oauthError)
+                    .oauthErrorCode(errorCode).oauthErrorMessage(errorDesc)
+                    .errorType(ErrorType.THIRDPARTY).serviceType(serviceType);
             oauthService.handleOAuthError(er, state);
         } else {
             String code = request.getParameter("code");
@@ -89,6 +92,7 @@ public class GatewayController {
         }
     }
 
+    //TODO
     private boolean checkState(String state) {
         return true;
     }
