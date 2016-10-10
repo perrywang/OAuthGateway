@@ -3,7 +3,6 @@ package org.thinkinghub.gateway.oauth.response;
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
