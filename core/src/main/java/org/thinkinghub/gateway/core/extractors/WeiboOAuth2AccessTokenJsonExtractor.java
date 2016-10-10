@@ -6,8 +6,8 @@ import org.thinkinghub.gateway.core.token.GatewayAccessToken;
 
 public class WeiboOAuth2AccessTokenJsonExtractor extends OAuth2AccessTokenJsonExtractor {
     private static final String USERID_REGEX = "\"uid\"\\s*:\\s*\"(\\S*?)\"";
-    private static final String ERRORCODE_REGEX = "\"error_code\"\\s*:\\s*\"(\\S*?)\"";
-    private static final String ERRORDESC_REGEX = "\"error_description\"\\s*:\\s*\"(\\S*?)\"";
+    private static final String ERRORCODE_REGEX = "\"error_code\"\\s*:\\s*(\\w*)?";
+    private static final String ERRORDESC_REGEX = "\"error_description\"\\s*:\\s*\"(.*?)\"";
 
     private static class InstanceHolder {
         private static final WeiboOAuth2AccessTokenJsonExtractor INSTANCE = new WeiboOAuth2AccessTokenJsonExtractor();
