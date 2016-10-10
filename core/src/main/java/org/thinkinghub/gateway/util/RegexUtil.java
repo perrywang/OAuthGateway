@@ -17,7 +17,7 @@ public class RegexUtil {
     }
 
     public static boolean isProperUrl(String url){
-        String urlRegExp = "^https?://[\\d\\-a-zA-Z]+(\\.[\\d\\-a-zA-Z]+)*/?$";
+        String urlRegExp = "^(https?://)?([\\da-z.-]+).([a-z.]{2,6})([/\\w .-]*)*/?$";
         return url.matches(urlRegExp);
     }
 }
