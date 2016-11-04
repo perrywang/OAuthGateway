@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thinkinghub.gateway.oauth.entity.ErrorType;
 import org.thinkinghub.gateway.oauth.entity.ServiceType;
+import org.thinkinghub.gateway.oauth.entity.State;
 import org.thinkinghub.gateway.oauth.exception.CallbackUrlNotFoundException;
 import org.thinkinghub.gateway.oauth.exception.IncorrectUrlFormatException;
 import org.thinkinghub.gateway.oauth.exception.RedirectUrlException;
@@ -21,6 +23,7 @@ import org.thinkinghub.gateway.oauth.exception.ServiceTypeNotFoundException;
 import org.thinkinghub.gateway.oauth.exception.UserKeyNotFoundException;
 import org.thinkinghub.gateway.oauth.registry.ServiceRegistry;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
+import org.thinkinghub.gateway.oauth.repository.StateRepository;
 import org.thinkinghub.gateway.oauth.response.ErrorResponse;
 import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.service.OAuthService;
@@ -29,11 +32,15 @@ import org.thinkinghub.gateway.oauth.util.JsonUtil;
 import org.thinkinghub.gateway.oauth.util.MD5Encrypt;
 import org.thinkinghub.gateway.util.RegexUtil;
 
+@Slf4j
 @RestController
 public class GatewayController {
 
     @Autowired
     private AuthenticationHistoryRepository authenticationHistoryRepository;
+
+    @Autowired
+    private StateRepository stateRepository;
 
     @RequestMapping(value = "/oauthgateway", method = RequestMethod.GET)
     public void route(@RequestParam(value = "callbackUrl", required = false) String callbackUrl,
@@ -69,7 +76,10 @@ public class GatewayController {
     public void oauthProviderCallback(@PathVariable String service,
                                       HttpServletResponse response, HttpServletRequest request) {
         String state = request.getParameter("state");
-        checkState(state);
+        if(!checkState(state)){
+            log.error("No state or wrong state returned from " + service + ", this might be caused by external attack");
+            return;
+        }
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         OAuthService oauthService = ServiceRegistry.getService(serviceType);
         String oauthError = request.getParameter("error");
@@ -92,9 +102,9 @@ public class GatewayController {
         }
     }
 
-    //TODO
     private boolean checkState(String state) {
-        return true;
+        State s = stateRepository.findByKey(state);
+        return (s != null && s.getId() > 0) ? true : false;
     }
 
     private String generateRedirectUrl(GatewayResponse response, String callback) {

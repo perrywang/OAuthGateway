@@ -10,8 +10,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thinkinghub.gateway.oauth.entity.AuthenticationHistory;
 import org.thinkinghub.gateway.oauth.entity.ServiceStatus;
+import org.thinkinghub.gateway.oauth.entity.State;
 import org.thinkinghub.gateway.oauth.queue.QueuableTask;
 import org.thinkinghub.gateway.oauth.repository.AuthenticationHistoryRepository;
+import org.thinkinghub.gateway.oauth.repository.StateRepository;
 import org.thinkinghub.gateway.oauth.response.ErrorResponse;
 import org.thinkinghub.gateway.oauth.response.GatewayResponse;
 import org.thinkinghub.gateway.oauth.service.QueueService;
@@ -21,6 +23,9 @@ import org.thinkinghub.gateway.oauth.service.QueueService;
 public class GatewayEventsHandler {
     @Autowired
     private AuthenticationHistoryRepository authenticationHistoryRepository;
+
+    @Autowired
+    private StateRepository stateRepository;
 
     @Autowired
     private QueueService queueService;
@@ -34,6 +39,10 @@ public class GatewayEventsHandler {
         ah.setCallback(event.getCallback());
         ah.setServiceStatus(ServiceStatus.INPROGRESS);
         authenticationHistoryRepository.save(ah);
+
+        State s = new State();
+        s.setKey(event.getState());
+        stateRepository.save(s);
     }
 
     @EventListener
