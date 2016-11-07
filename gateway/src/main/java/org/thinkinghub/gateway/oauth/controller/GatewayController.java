@@ -47,6 +47,9 @@ public class GatewayController {
                       @RequestParam(value = "key", required = false) String key,
                       @RequestParam(value = "service", required = false) String service,
                       HttpServletResponse response) {
+        log.debug("callBackUrl is " + callbackUrl
+                + ", user key is " + key
+                + ", service is " + service);
         preCheckParam(callbackUrl, key, service);
         OAuthService oauthService = ServiceRegistry.getService(ServiceType.valueOf(service.toUpperCase()));
         String url = oauthService.authenticate(key, callbackUrl);
@@ -76,7 +79,7 @@ public class GatewayController {
     public void oauthProviderCallback(@PathVariable String service,
                                       HttpServletResponse response, HttpServletRequest request) {
         String state = request.getParameter("state");
-        if(!checkState(state)){
+        if (!checkState(state)) {
             log.error("No state or wrong state returned from " + service + ", this might be caused by external attack");
             return;
         }
@@ -92,6 +95,12 @@ public class GatewayController {
             oauthService.handleOAuthError(er, state);
         } else {
             String code = request.getParameter("code");
+            //code is missing not because any error is happening only.
+            //For example, if user refuses to login Webxin, the code will not be returned.
+            if (code == null || code.equals("")) {
+                log.error("No code returned from " + service + ", state is " + state);
+                return;
+            }
             GatewayResponse gatewayResponse = oauthService.authenticated(code, state);
             String matchedCallback = authenticationHistoryRepository.findByState(state).getCallback();
             try {

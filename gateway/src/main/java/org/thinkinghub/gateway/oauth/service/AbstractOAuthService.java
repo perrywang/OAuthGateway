@@ -31,24 +31,27 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public abstract class AbstractOAuthService implements OAuthService {
-	
-	@Autowired
-	private UserRepository userRepository;
-	
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public String authenticate(String key, String callback) {
-		User user = userRepository.findByKey(key);
-		if (user == null) {
-			throw new GWUserNotFoundException();
-		}
+        User user = userRepository.findByKey(key);
+        if (user == null) {
+            throw new GWUserNotFoundException();
+        }
         String state = Long.toString(IDGenerator.nextId());
+        log.debug("Start authenticating for user " + user.getName()
+                + "with state " + state
+                + " and app type " + this.supportedOAuthType());
         EventPublisher.instance().publishEvent(new StartingOAuthProcessEvent(user, this.supportedOAuthType(), state, callback));
         return getAuthorizationUrl(state);
     }
 
-	@Override
-    public GatewayResponse authenticated(String code, String state){
-        EventPublisher .instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(), state));
+    @Override
+    public GatewayResponse authenticated(String code, String state) {
+        EventPublisher.instance().publishEvent(new OAuthProviderCallbackReceivedEvent(this.supportedOAuthType(), state));
         OAuth20Service service = getOAuthServiceProvider(state);
         GatewayAccessToken accessToken = getAccessToken(state, code);
         checkToken(accessToken);
@@ -60,8 +63,8 @@ public abstract class AbstractOAuthService implements OAuthService {
     }
 
     @Override
-    public void handleOAuthError(ErrorResponse errorResponse, String state){
-    	throw new OAuthProcessingException(errorResponse.getOauthErrorCode(),errorResponse.getOauthErrorMessage());
+    public void handleOAuthError(ErrorResponse errorResponse, String state) {
+        throw new OAuthProcessingException(errorResponse.getOauthErrorCode(), errorResponse.getOauthErrorMessage());
     }
 
     protected abstract OAuth20Service getOAuthServiceProvider(String state);
